@@ -2,6 +2,7 @@
 	import type { User } from "$users/entity"
 	import type { CreateUserDTO, UpdateUserDTO } from "$users/dtos"
 
+	import { Eye, EyeOff } from "@lucide/svelte"
 	import { toast } from "svelte-sonner"
 	import { createForm, Field, Form, reset } from "@formisch/svelte"
 
@@ -20,6 +21,8 @@
 	}
 
 	let { user = null, open = $bindable(), onClose, onDelete }: Props = $props()
+
+	let showPassword = $state(false)
 
 	const schema = $derived(user ? updateUserDTOSchema : createUserDTOSchema)
 	const form = $derived.by(() => createForm({ schema }))
@@ -121,11 +124,29 @@
 						{...field.props}
 						input={field.input ?? ""}
 						errors={field.errors}
-						type="password"
+						type={showPassword ? "text" : "password"}
 						label={user ? "Contraseña (dejar vacío para mantener)" : "Contraseña"}
 						placeholder={user ? "Sin cambios" : ""}
 						autocomplete="current-password"
-					/>
+					>
+						{#snippet rightIcon()}
+							<button
+								type="button"
+								class="flex size-8 items-center justify-center text-corp-gray transition-colors hover:text-corp-ink"
+								aria-label={showPassword
+									? "Ocultar contraseña"
+									: "Mostrar contraseña"}
+								aria-pressed={showPassword}
+								onclick={() => (showPassword = !showPassword)}
+							>
+								{#if showPassword}
+									<EyeOff class="size-4" />
+								{:else}
+									<Eye class="size-4" />
+								{/if}
+							</button>
+						{/snippet}
+					</TextInput>
 				{/snippet}
 			</Field>
 		</div>

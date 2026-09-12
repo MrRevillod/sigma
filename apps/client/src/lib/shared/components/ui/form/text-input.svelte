@@ -60,7 +60,7 @@
 			aria-errormessage={`${name}-error`}
 		/>
 		{#if rightIcon}
-			<div class="absolute right-2.5 top-1/2 -translate-y-1/2">
+			<div class="absolute inset-y-0 right-2.5 flex items-center">
 				{@render rightIcon()}
 			</div>
 		{/if}
