@@ -56,7 +56,7 @@ export default defineConfig(
 		},
 	},
 	{
-		files: ["**/html-renderer.svelte"],
+		files: ["**/html-renderer.svelte", "**/manual-article.svelte"],
 		rules: {
 			"svelte/no-at-html-tags": "off",
 		},

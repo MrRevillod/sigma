@@ -380,7 +380,7 @@
 			<FormFooter onCancel={handleClose} submitLabel="Crear" isPending={createAcad.isPending}>
 				<Button variant="secondary" type="button" onclick={handleReset}>
 					<RotateCcw class="size-3.5" />
-					Reset
+					Limpiar Datos
 				</Button>
 			</FormFooter>
 		</div>

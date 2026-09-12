@@ -25,6 +25,7 @@
 		"d3-force": "^3.0.0",
 		"dompurify": "^3.4.10",
 		"layerchart": "^2.0.1",
+		"marked": "^18.0.12",
 		"runed": "^0.37.1",
 		"svelte-sonner": "^1.1.1",
 		"valibot": "^1.4.1"
