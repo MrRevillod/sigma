@@ -51,132 +51,156 @@
 
 #heading(numbering: none)[Introducción]
 
-Este documento presenta la plataforma de gestión de la producción científica de la Facultad de Ingeniería de la Universidad Católica de Temuco. Describe las capacidades implementadas, la proyección de su evolución futura y los aspectos técnicos de su implementación.
+Este documento presenta la plataforma desarrollada para la gestión y visualización de la producción científica de la Facultad de Ingeniería de la Universidad Católica de Temuco. El proyecto surge a partir de la necesidad de contar con un sistema centralizado para organizar la información de los académicos y sus publicaciones, reemplazando parte de la gestión que anteriormente se realizaba mediante planillas Excel.
 
-Al comenzar el proyecto y el análisis de la situación, se identificó que la Facultad de Ingeniería carecía de un *sistema centralizado* para gestionar y analizar la producción científica de sus académicos. El requerimiento general consistió en construir una *plataforma web* que permitiera importar, clasificar y analizar las publicaciones académicas de los investigadores de la facultad, con el objetivo de reemplazar la gestión manual basada en planillas Excel.
+La plataforma integra información académica con datos obtenidos desde fuentes externas, principalmente ORCID y OpenAlex. A partir de estos datos se implementaron procesos para importar y actualizar publicaciones, clasificarlas según las líneas de investigación de la facultad, determinar su indexación y generar indicadores de producción científica. Se incorporó información sobre las relaciones de coautoría para analizar las colaboraciones entre académicos y generar recomendaciones de posibles colaboradores.
 
-El resultado es un sistema funcional que cubre el *ciclo completo* de la gestión de la producción científica: desde la importación de los datos, pasando por su clasificación y análisis, hasta su difusión en una vista pública. La plataforma está operativa y accesible en línea, y distingue claramente una *vista pública* de divulgación y una *vista administrativa* de gestión interna.
+El sistema está operativo para la Facultad de Ingeniería y ofrece una vista pública para consultar la información y una vista administrativa para gestionarla. Las vistas dan acceso a las funcionalidades desarrolladas; el trabajo principal de la plataforma es procesar y organizar los datos.
+
+El estado actual del sistema y las principales funcionalidades implementadas se describen a continuación. Posteriormente se presentan las líneas de desarrollo que se han identificado para continuar ampliando la plataforma.
+
 
 = El sistema actual
 
 == Contexto institucional
 
-El sistema está pensado para una sola unidad académica: la *Facultad de Ingeniería* de la UCT. La estructura de la facultad es la siguiente:
+El sistema está pensado para una sola unidad académica: la Facultad de Ingeniería de la UCT. La estructura de la facultad es la siguiente:
 
-- *4 departamentos:* Ciencias Matemáticas y Físicas; Obras Civiles y Geología; Procesos Industriales; Ingeniería Informática.
-- *10 carreras* distribuidas entre esos departamentos
+- 4 departamentos: Ciencias Matemáticas y Físicas; Obras Civiles y Geología; Procesos Industriales; Ingeniería Informática.
+- 10 carreras distribuidas entre esos departamentos
 
-El diseño del modelo de datos refleja esta jerarquía institucional de forma explícita. La organización se representa con una cadena *facultad → departamento → carrera*, a la que se suman dos dimensiones propias del ámbito académico: el *cargo laboral* del académico y su *categorización académica* (planta permanente o adjunta, con una opción de docencia o investigación y horas asociadas).
+El diseño del modelo de datos refleja esta jerarquía institucional de forma explícita. La organización se representa con una cadena facultad → departamento → carrera, a la que se suman dos dimensiones propias del ámbito académico: el cargo laboral del académico y su categorización académica (planta permanente o adjunta, con una opción de docencia o investigación y horas asociadas).
 
 #pagebreak()
 
 == Capacidades del sistema
 
-La plataforma ofrece un conjunto de soluciones de alto nivel que reemplazan la gestión manual. En su gran mayoría, estas capacidades tienen que ver con la representación y visualización de la producción académica de la facultad. Cada una de ellas se describe a continuación con el detalle de su funcionamiento.
+La información de los académicos y su producción científica se reúne en un mismo lugar. Las principales funcionalidades están orientadas a la gestión de los datos académicos, la importación y clasificación de publicaciones, el análisis de la producción científica y la visualización de las colaboraciones entre investigadores.
 
 === Gestión de académicos
 
-La plataforma mantiene un *registro centralizado* de cada académico con su información personal, institucional y académica. Los datos cubren:
+Los académicos de la facultad quedan registrados en un catálogo central. Contiene información personal, institucional y académica:
 
-- *Identificación:* RUT, nombres y apellidos, correo institucional y *ORCID*.
-- *Datos personales:* sexo, fecha de nacimiento, nacionalidad y ciudad.
-- *Datos laborales:* cargo, departamento, carrera y *JCE* (Jornada Completa Equivalente, expresada en horas).
-- *Categorización académica:* planta (permanente/adjunta), categoría (p. ej. Profesor Titular, Asociado, Asistente), opción (docencia/investigación), horas de la categoría y horas de descuento anual.
-- *Grados académicos:* hasta tres niveles (profesional, magíster y doctor), cada uno con nombre, universidad, país y fecha de obtención.
+Identificación: RUT, nombres y apellidos, correo institucional y ORCID.
+Datos personales: sexo, fecha de nacimiento, nacionalidad y ciudad.
+Datos laborales: cargo, departamento, carrera y JCE (Jornada Completa Equivalente), expresada en horas.
+Categorización académica: planta, categoría, opción de docencia o investigación, horas asociadas a la categoría y horas de descuento anual.
+Grados académicos: información de los grados profesional, magíster y doctor, incluyendo institución, país y fecha de obtención.
 
-La creación y edición de registros incorpora *validaciones de negocio* que evitan datos inconsistentes: el formato del RUT y del ORCID se comprueban, la carrera debe pertenecer al departamento indicado, y la JCE no puede superar el máximo configurado por la institución. De igual forma se previene el alta duplicada por RUT o por ORCID.
+Para evitar inconsistencias, la creación y edición de estos registros cuenta con validaciones. Se verifica el formato del RUT y ORCID, la relación entre carrera y departamento y los límites configurados para la JCE. El sistema evita registrar dos veces a un académico mediante el RUT o el ORCID.
 
 === Importación de datos académicos desde CSV
 
-Para la carga inicial de académicos, la plataforma permite *importar académicos desde un archivo CSV* con un formato definido, evitando el registro uno a uno. El proceso es transaccional y controlado:
+Para la carga inicial y actualización de académicos se implementó una importación mediante archivos CSV. Cada fila es validada de forma independiente antes de ser almacenada.
 
-- Cada fila del archivo se *valida de forma independiente*: primero el formato de los campos y luego las reglas de negocio (existencia de referencias, consistencia entre categoría, planta, opción y horas).
-- Las referencias (departamento, carrera, cargo, categoría) se *resuelven por nombre* contra los catálogos existentes, y se comprueba la coherencia entre la categoría elegida, su planta y las horas declaradas.
-- Las filas que superan la validación se *persisten en una transacción*; si alguna falla, se registra el error sin afectar a las filas correctas.
-- Al finalizar, se entrega un *reporte de resultados* con el número de académicos importados y el detalle de errores por fila, lo que permite corregir el archivo de forma dirigida.
+Durante este proceso se comprueba el formato de los datos y las reglas de negocio correspondientes. Las referencias a departamentos, carreras, cargos y categorías se resuelven utilizando los catálogos existentes y se valida que los datos sean consistentes entre sí.
 
-La importación está pensada tanto para la *carga inicial* como para la *actualización* de datos. Si el archivo contiene un académico que ya existe (mismo RUT o mismo correo), esa fila *se actualiza*: el sistema lo reconoce por RUT o por correo, reemplaza sus datos con los del archivo y refresca sus grados académicos. El resumen de resultados distingue los académicos *creados* de los *actualizados*. Si alguna fila presenta un error (por ejemplo, referencias inexistentes o datos inconsistentes), se omite y el motivo se reporta en la fila correspondiente con un mensaje claro.
+Las filas válidas se almacenan mediante una transacción y las que presentan errores se informan por separado. Al finalizar la importación, el sistema entrega un resumen con los registros creados, actualizados y los errores encontrados en cada fila.
+
+La misma funcionalidad permite actualizar información existente. Si el sistema encuentra un académico mediante su RUT o correo, sus datos se actualizan en lugar de crear un nuevo registro. Los grados académicos también se actualizan durante este proceso.
 
 === Sincronización de publicaciones
 
-La plataforma importa automáticamente las publicaciones de cada académico desde fuentes públicas, evitando el registro manual. El flujo combina dos fuentes:
+Las publicaciones de los académicos se obtienen automáticamente desde fuentes externas. ORCID se utiliza como punto de partida para identificar las obras asociadas a cada académico y OpenAlex permite completar sus metadatos.
 
-- *ORCID* se consulta para obtener el identificador de cada publicación asociada al perfil del académico.
-- *OpenAlex* se consulta para completar la información con metadatos completos y estandarizados (taxonomía, tópicos, palabras clave, ISSN de las revistas, autores y afiliaciones, entre otros).
+De cada publicación se obtiene información como el título, DOI, fecha, año, idioma, estado, revista, autores y afiliaciones. Se incorpora la información de tópicos, palabras clave e ISSN.
 
-De cada publicación se captura: título, DOI, fecha y año de publicación, idioma, estado (aceptado/publicado), revista o fuente, autores y afiliaciones. El proceso *distingue autores internos* (académicos de la facultad) de *autores externos* a partir de su ORCID, lo que es la base para los análisis por unidad y para la red de colaboración.
+A partir de los ORCID de los autores, el sistema distingue entre académicos de la facultad y autores externos. Esta distinción se utiliza posteriormente para representar las colaboraciones científicas.
 
-La sincronización puede ejecutarse *por académico* (desde su perfil) o *de forma masiva* para todos los académicos, y al finalizar se entrega un *resumen de resultados* (publicaciones creadas, autores enlazados, tópicos y palabras clave asociados, obras sin DOI o no encontradas, y errores puntuales). Es un proceso idempotente: al repetirlo, actualiza los registros existentes en lugar de duplicarlos.
+La sincronización puede ejecutarse para un académico específico o para todos los académicos de la facultad. El proceso es idempotente, es por esto que una publicación que ya existe se actualiza en lugar de registrarse nuevamente. Al finalizar se informa el resultado del proceso, incluyendo publicaciones creadas, autores enlazados, tópicos y palabras clave asociados, además de las obras que no pudieron ser incorporadas.
 
-Conviene precisar algunos casos particulares de la sincronización:
+Las fuentes utilizadas imponen algunas restricciones a la importación. Solo se consideran publicaciones visibles en ORCID, con DOI y que estén disponibles en OpenAlex. El alcance actual considera únicamente artículos, dejando fuera libros, capítulos y otros tipos de obra.
 
-- *Solo se importan publicaciones visibles en ORCID*: la fuente de partida es el perfil ORCID del académico, por lo que una obra que aún no aparece allí (o que no está visible públicamente) no se importa hasta que esté disponible en la fuente. Puede ser necesario esperar a que la fuente externa refleje la publicación.
-- *Se importan únicamente obras con DOI y presentes en OpenAlex*: las obras sin DOI se omiten, y las que no se encuentran en OpenAlex tampoco se incorporan; ambos casos se cuentan en el resumen de resultados.
-- *Solo se incorporan artículos*: otros tipos de obra (libros, capítulos, actas, etc.) quedan fuera de la importación.
-- *La sincronización puede tardar*: el proceso consulta OpenAlex con un intervalo entre peticiones, y la sincronización masiva recorre a todos los académicos, por lo que puede tomar varios minutos. Al repetir una sincronización, las obras ya registradas se actualizan sin duplicarse y las correcciones manuales se conservan.
-- *Persistencia de las ediciones*: cuando se corrige manualmente una publicación, los cambios se guardan de forma separada de los datos originales. En una re-sincronización, los metadatos base se actualizan desde la fuente pero *las correcciones manuales se conservan*.
-- *Desvinculación*: si una obra deja de aparecer en ORCID, se desvincula del académico.
+Las modificaciones realizadas manualmente sobre una publicación se almacenan por separado de los datos obtenidos desde las fuentes externas. Una nueva sincronización puede actualizar los metadatos originales sin perder las correcciones realizadas desde la plataforma. Si una publicación deja de aparecer en ORCID, esta se desvincula del académico correspondiente.
 
-=== Clasificación institucional propia (líneas de investigación)
+=== Clasificación institucional de las publicaciones
 
-Dentro de los requerimientos institucionales se presentó la necesidad de clasificar cada publicación según una serie de *líneas de investigación*. Esto corresponde a una clasificación propia de la institución, que se nutre y complementa con la taxonomía estándar de OpenAlex. La plataforma permite:
+La facultad cuenta con una clasificación propia para organizar las publicaciones según sus líneas de investigación. Estas líneas complementan la clasificación temática de las publicaciones.
 
-- Mantener sus propias *líneas de investigación* (Materiales Avanzados y Bioproductos; Ciencias de la Tierra; Sostenibilidad; IA, Sistemas Complejos y Modelamiento Matemático; Educación en Ingeniería).
-- Clasificar cada publicación a través de la *taxonomía estándar de OpenAlex*: dominio → campo → subcampo → tópico → palabra clave.
-- *Asignar subcampos a líneas de investigación* de forma visual (mediante arrastrar y soltar) desde la administración, de modo que las publicaciones queden agrupadas según el interés institucional.
+Las líneas de investigación institucionales se administran y se relacionan con los subcampos temáticos correspondientes. La clasificación utilizada por la plataforma sigue la estructura:
 
-La asignación de una publicación a su línea es *automática y trazable*: se usa la línea indicada manualmente cuando existe, o se infiere a partir del tópico de mayor relevancia en OpenAlex; si no hay coincidencia, la obra queda en la categoría "Sin asignar". Esta regla se aplica de forma consistente en las estadísticas.
+#image("openalex-hierarchy.png", width: 100%)
+
+Los subcampos pueden ser asignados visualmente a las líneas de investigación mediante la administración del sistema. A partir de esta relación, las publicaciones pueden quedar asociadas a una línea institucional.
+
+La asignación de la línea de investigación se realiza de forma automática. En el caso que exista una clasificación indicada manualmente, esta tiene prioridad. En los demás casos se utiliza la clasificación temática disponible y el tópico de mayor relevancia para realizar la inferencia. Si no existe una coincidencia, la publicación queda como "Sin asignar".
 
 === Indexación en WoS y Scopus
 
-La plataforma determina si cada publicación proviene de una revista *indexada en Web of Science (WoS)* o en *Scopus*, mediante tablas de ISSN. Esto permite:
+Para cada publicación, la plataforma determina si la revista se encuentra indexada en Web of Science (WoS) o Scopus. Para esto se utilizan tablas de ISSN que permiten relacionar cada revista con su correspondiente indexación.
 
-- Distinguir entre publicaciones *indexadas* y *no indexadas*.
-- Desglosar todas las estadísticas y rankings por tipo de indexación, que es un criterio habitual de evaluación de la producción científica.
+La información se incorpora a las publicaciones y también a las estadísticas de la plataforma. Esto permite filtrar y comparar la producción según su indexación.
 
-Este dato se integra en el resto de las vistas: cada publicación muestra su indexación, y los dashboards permiten filtrar y comparar la producción WoS frente a la de Scopus.
-
-*Punto a destacar*: Para clasificar cada publicación en su indexación correspondiente se utilizaron bases de datos públicas de años anteriores que relacionan *ISSNs* y tipos de indexación, además de busquedas manuales en internet. Esto es una limitación conocida debido a que las fuentes oficiales y actualizadas son de pago, resulta complejo mantener este tipo de clasificaciones sin pasar por la fuente oficial.
+La clasificación presenta una limitación en relación a la disponibilidad de información actualizada. Para realizarla se utilizaron bases de datos públicas de años anteriores y búsquedas manuales, debido a que las fuentes oficiales y actualizadas de estas indexaciones requieren acceso a información de pago.
 
 === Estadísticas y dashboards
 
-La plataforma entrega un conjunto de vistas analíticas con gráficos y KPIs que permiten comprender la producción de la facultad a distintos niveles de detalle:
+La producción científica se analiza en distintas vistas según el nivel de la organización. A nivel de facultad se muestran indicadores como el total de publicaciones, distribución por año, publicaciones WoS y Scopus, distribución por departamento y línea de investigación y ranking de académicos.
 
-- *A nivel de facultad:* total de publicaciones, conteo WoS/Scopus, tendencia por año, distribución por departamento y por línea de investigación, y ranking de publicadores.
-- *A nivel de departamento:* resumen, top de publicadores y tendencia por tipo de indexación.
-- *A nivel de línea de investigación:* resumen, distribución por departamento y top de publicadores.
-- *A nivel de académico:* distribución por línea, línea dominante, tendencia anual y *contribución relativa*.
-- *A nivel de facultad, departamento y línea de investigación:* los indicadores y gráficos de *productividad por jornada completa equivalente (JCE)*.
+A nivel de departamento y línea de investigación se presentan resúmenes de producción, tendencias y rankings. Los perfiles de los académicos incluyen su distribución por líneas de investigación, línea dominante, evolución anual y contribución relativa dentro de su facultad, departamento y línea.
 
-La *contribución relativa* es una de las vistas de mayor valor: muestra cuánto aporta un académico a su facultad, a su departamento y a su línea de investigación, mediante indicadores comparativos. Esto permite valorar el desempeño individual en el contexto de su unidad. Todas las vistas admiten filtros de rango de años, departamento y tipo de indexación.
+Las vistas pueden filtrarse por rango de años, departamento e indexación. Así mismo, se incorporan indicadores de productividad relacionados con la JCE, que permiten comparar la producción considerando las horas de jornada de los académicos incluidos en el análisis.
 
-La plataforma complementa las estadísticas con un *indicador de productividad* que relaciona las publicaciones de cada año con la *jornada completa equivalente (JCE)* de los académicos del alcance, expresado en *publicaciones por hora de jornada*. Al trabajar sobre una base homogénea de tiempo de trabajo, el valor es comparable entre distintas unidades y distintos años, y reemplaza el cálculo manual que se realizaba en planillas. Se entregan tres series por año — *total*, *WoS* y *Scopus* —, filtrables por *grado académico* del autor (todas, doctores o magísteres, con una variante definida para cada vista), por *indexación* y por el *mes de corte* que define la agrupación en años académicos. El denominador corresponde a la jornada en horas de los académicos considerados: por defecto, los *doctores* del alcance, con la posibilidad de ampliarlo a *todos los académicos del alcance* (doctores, magísteres y profesionales). El panel muestra además la jornada acumulada y el número de académicos incluidos, y en el caso de una línea de investigación el denominador considera la *línea dominante* de cada académico.
+El indicador de productividad se calcula relacionando las publicaciones de cada año con la jornada en horas de los académicos considerados. Se entregan resultados para la producción total, WoS y Scopus. El análisis puede filtrarse por grado académico y utilizar distintos grupos de académicos como denominador.
+
+En el caso de las líneas de investigación, el cálculo considera la línea dominante de cada académico y muestra la jornada acumulada y la cantidad de académicos incluidos en cada resultado.
 
 === Red de colaboraciones y recomendaciones
 
-La plataforma visualiza la *colaboración científica* entre académicos como un *grafo*: los nodos representan académicos y las aristas las coautorías, con un peso según el número de publicaciones compartidas.
+Las colaboraciones científicas se representan mediante un grafo. Los nodos corresponden a académicos de la facultad y las relaciones representan coautorías entre ellos. El peso de cada relación depende de la cantidad de publicaciones compartidas.
 
-Sobre esta base, el sistema *recomienda potenciales colaboradores* que no pertenecen a la red directa del académico consultado. La recomendación se fundamenta en la *afinidad temática*: coincidencia en tópicos, palabras clave y líneas de investigación, con un umbral de coincidencia configurable. De esta forma, la herramienta no solo describe la colaboración existente, sino que apoya la búsqueda de nuevos vínculos científicos.
+A partir de esta red se generan recomendaciones de posibles colaboradores. Para esto se buscan académicos que no formen parte de la red directa del investigador consultado y que tengan afinidad con sus áreas de trabajo.
+
+La afinidad se calcula utilizando la información temática disponible en las publicaciones, considerando tópicos, palabras clave y líneas de investigación. El umbral utilizado para determinar una coincidencia puede ser configurado en la plataforma.
 
 === Vistas públicas y administrativas
 
-- *Vista pública:* directorio de académicos (con filtros de búsqueda, departamento y carrera) y perfil público de cada uno, organizado en pestañas de publicaciones, estadísticas y red de colaboración. No requiere iniciar sesión, por lo que sirve como carta de presentación de la producción científica de la facultad.
+El sistema tiene dos espacios principales. La vista pública permite consultar un directorio de los académicos de la facultad y acceder a sus perfiles sin iniciar sesión. Estos perfiles incluyen información sobre publicaciones, estadísticas y red de colaboración.
 
-- *Vista administrativa:* gestión completa de académicos, categorías, opciones, cargos, líneas de investigación, publicaciones y usuarios.
+La vista administrativa permite gestionar los datos utilizados por la plataforma. Desde ella se pueden administrar académicos, categorías, opciones, cargos, líneas de investigación, publicaciones y usuarios.
 
-El acceso administrativo está protegido con *inicio de sesión por correo y contraseña*.
+Las funciones administrativas están protegidas mediante inicio de sesión con correo y contraseña.
 
-=== Autoservicio de perfil por parte del académico
+=== Autoservicio de perfil
 
-La plataforma permite que el propio académico mantenga actualizada su información, con controles de seguridad:
+Los académicos pueden actualizar parte de su información mediante un mecanismo de edición controlado por correo electrónico. El administrador puede generar códigos de edición de un solo uso y enviarlos de forma individual o masiva.
 
-- El administrador puede *enviar códigos de edición de perfil de un solo uso* por correo (individual o masivo). Los códigos son de 8 caracteres y la plataforma mantiene un número de códigos vigentes por académico.
-- El académico usa el código para *solicitar un enlace de edición* que llega a su correo. El enlace es *temporal* (con vencimiento) y queda vinculado al estado del registro, de modo que solo permite editar la versión vigente de sus datos.
-- A través de ese enlace, el académico puede actualizar sus propios datos (nombres, ORCID, sexo, fecha de nacimiento, nacionalidad y ciudad).
-- Además, el académico puede *corregir las publicaciones* donde es autor o coautor cuando la información proveniente de la fuente externa (ORCID/OpenAlex) presenta errores: puede editar metadatos (título, resumen, DOI, año, estado), indicar el *autor correspondiente*, ajustar las *afiliaciones* de cada autor y reasignar la *línea de investigación*.
+El académico utiliza este código para solicitar un enlace de edición, que se envía a su correo y tiene un tiempo de vigencia limitado. El enlace queda asociado al estado actual del registro para evitar que pueda utilizarse sobre una versión anterior de los datos.
 
-De este modo, la plataforma combina la automatización de la importación con la capacidad de ajuste fino por parte de quienes conocen mejor su propia producción, sin comprometer la seguridad ni la integridad de los datos.
+Desde este espacio se pueden actualizar datos personales como nombres, ORCID, sexo, fecha de nacimiento, nacionalidad y ciudad.
+
+El académico puede corregir información de las publicaciones en las que participa. Entre los datos que puede modificar se encuentran el título, resumen, DOI, año, estado, autor correspondiente, afiliaciones y línea de investigación. La plataforma combina de este modo la sincronización automática con la revisión de los propios académicos.
 
 = Proyección a futuro
 
-Este apartado presenta las líneas de evolución previstas para la plataforma.
+Como parte de la continuidad del proyecto, se identificaron distintas funcionalidades que podrían incorporarse en futuras etapas de desarrollo. Estas permitirían ampliar el alcance actual de la plataforma y abordar nuevas necesidades relacionadas con la gestión y análisis de la investigación de la facultad.
+
+== Internacionalización
+
+Los coautores externos que participan en las publicaciones de los académicos de la facultad se identifican actualmente. Sin embargo, no se registran como académicos dentro del sistema. Sus datos quedan asociados a las publicaciones y se muestran como parte del detalle de cada colaboración. Por lo tanto, la información disponible sobre ellos no permite realizar el mismo tipo de análisis que se realiza para los académicos de la facultad.
+
+Incorporar a los colaboradores externos extranjeros en la red de colaboración sería una ampliación de esta funcionalidad. Para cada uno se podría almacenar información obtenida desde las fuentes utilizadas en la sincronización, como su país e institución de afiliación.
+
+Las recomendaciones de colaboración podrían incluir a estos investigadores. Cuando el sistema sugiera un posible colaborador, la recomendación podría incluir investigadores internos y externos según su afinidad temática. Para esto se podrían mantener las métricas con las cuales ya cuenta el sistema, basadas en la coincidencia de tópicos, palabras clave y líneas de investigación.
+
+Con esta información se podría conocer con qué instituciones extranjeras existen colaboraciones y qué investigadores tienen relación con las áreas de trabajo de la facultad. Estos datos servirían como antecedente para analizar posibles convenios, pasantías o nuevas colaboraciones académicas.
+
+== Catálogo de revistas y análisis de APC
+
+Las revistas ya forman parte de los datos obtenidos para las publicaciones, pero actualmente esa información solo se utiliza para determinar la indexación y generar estadísticas. La plataforma no cuenta con un catálogo que permita revisar de forma conjunta las revistas utilizadas por los académicos y sus costos de publicación.
+
+Se podría generar este catálogo en base a las revistas presentes en las publicaciones sincronizadas. Cada registro podría incluir filtros por cuartil, indexación WoS o Scopus, línea de investigación, departamento y rango de años. Sería posible consultar qué revistas han sido utilizadas por los académicos y en qué áreas se concentran.
+
+A esta información se podría agregar el Article Processing Charge (APC) correspondiente a cada revista, junto con indicadores como el Impact Factor y el cuartil. Con estos datos sería posible comparar revistas de acuerdo a su costo y sus indicadores bibliométricos.
+
+El catálogo también podría utilizarse para estimar presupuestos de publicación. Por ejemplo, permitiría revisar cuánto podría costar publicar en determinadas revistas y analizar alternativas dentro de una misma línea de investigación o nivel de indexación.
+
+== Proyectos adjudicados y en curso
+
+El análisis de la producción científica parte de las publicaciones y los académicos que participan en ellas. Los proyectos de investigación relacionados con estas publicaciones no forman parte del modelo actual, por lo que no es posible relacionar directamente una publicación con el proyecto que la financió.
+
+Incorporar un módulo de proyectos de investigación podría ser una siguiente etapa, comenzando con aquellos adjudicados a través de ANID. Cada proyecto podría contener información sobre la fuente de financiamiento, su periodo de ejecución, estado e investigadores participantes. Entre estos se incluiría al investigador responsable y a los coinvestigadores.
+
+Las publicaciones podrían vincularse con los proyectos correspondientes. Esto permitiría consultar la producción asociada a un proyecto y conocer los investigadores que participan en él. Se podrían analizar los proyectos en los que participa cada académico y su distribución entre las distintas líneas de investigación de la facultad.
+
+La información de proyectos complementaría los datos de publicaciones que ya maneja la plataforma y representaría una parte más amplia de la actividad investigativa de la facultad.

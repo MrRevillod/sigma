@@ -21,7 +21,8 @@ impl StatsService {
 			self.stats.stats_by_journal_kind(&query),
 			self.stats.stats_by_department(&query),
 			self.stats.stats_by_research_line(&query),
-			self.stats.top_publishers_faculty(&query, query.limit.unwrap_or(10)),
+			self.stats
+				.top_publishers_faculty(&query, query.limit.unwrap_or(10)),
 		);
 
 		let summary = summary?;
@@ -46,7 +47,8 @@ impl StatsService {
 	) -> AppResult<DepartmentDetailResponse> {
 		let (summary, publishers, trend) = tokio::join!(
 			self.stats.department_summary(&id, &query),
-			self.stats.top_publishers(&id, &query, query.limit.unwrap_or(10)),
+			self.stats
+				.top_publishers(&id, &query, query.limit.unwrap_or(10)),
 			self.stats.department_journal_kind_trend(&id, &query),
 		);
 
@@ -76,7 +78,8 @@ impl StatsService {
 			self.stats.research_line_journal_kind_trend(&id, &query),
 			self.stats
 				.research_line_department_distribution(&id, &query),
-			self.stats.research_line_top_publishers(&id, &query, query.limit.unwrap_or(10)),
+			self.stats
+				.research_line_top_publishers(&id, &query, query.limit.unwrap_or(10)),
 		);
 
 		let summary = summary?;
