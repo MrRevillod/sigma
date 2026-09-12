@@ -72,6 +72,15 @@ class AcademicsService {
 		return academic.then((dto) => Academic.fromDTO(dto))
 	}
 
+	public unlink(id: string): Promise<Academic> {
+		const academic = http.request<AcademicDTO>({
+			method: "POST",
+			url: `/academics/${id}/unlink`,
+		})
+
+		return academic.then((dto) => Academic.fromDTO(dto))
+	}
+
 	public import(file: File): Promise<ImportResult> {
 		const formData = new FormData()
 		formData.append("file", file)

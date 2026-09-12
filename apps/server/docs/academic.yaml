@@ -494,6 +494,15 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/AcademicOption"
+        - name: includeUnlinked
+          in: query
+          description: >
+            Incluir académicos desvinculados en el listado. Por defecto
+            (false) solo se listan los activos.
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         "200":
           description: Listado de académicos obtenido exitosamente
@@ -757,6 +766,59 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Académico no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - CookieAuth: []
+
+  /academics/{id}/unlink:
+    post:
+      tags:
+        - Académicos
+      summary: Desvincular académico
+      description: >
+        Marca al académico como desvinculado de la universidad (soft delete).
+        Sus publicaciones se conservan y siguen contando para el período en
+        que estuvo vinculado, desde su fecha de ingreso hasta la fecha de
+        desvinculación. A partir de la desvinculación deja de contar para la
+        JCE.
+      operationId: unlinkAcademic
+      parameters:
+        - name: id
+          in: path
+          description: UUID del académico
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "201":
+          description: Académico desvinculado exitosamente
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/AcademicView"
+        "401":
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Académico no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: El académico ya está desvinculado
           content:
             application/json:
               schema:
@@ -1572,6 +1634,15 @@ components:
           format: date
           description: Fecha de ingreso a la universidad
           example: "2010-05-01"
+        leftAt:
+          type: string
+          format: date
+          nullable: true
+          description: >
+            Fecha de desvinculación de la universidad. `null` si el académico
+            sigue activo. Las publicaciones se atribuyen solo dentro del
+            período [joinedAt, leftAt].
+          example: "2026-09-12"
         workPosition:
           type: string
           description: Nombre del cargo laboral

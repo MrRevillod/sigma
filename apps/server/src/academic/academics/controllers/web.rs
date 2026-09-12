@@ -36,7 +36,10 @@ impl AcademicsController {
 	#[get("/public")]
 	pub async fn get_public_academics(&self, req: Request) -> WebResult<Vec<AcademicPublicView>> {
 		let query = req.query_validator::<GetAcademicsQuery>()?;
-		let academics = self.academics.find(query.unwrap_or_default()).await?;
+		let academics = self
+			.academics
+			.find_active(query.unwrap_or_default())
+			.await?;
 
 		Ok(academics
 			.into_iter()
@@ -47,7 +50,7 @@ impl AcademicsController {
 	#[get("/public/{id}")]
 	pub async fn get_public_academic_view(&self, req: Request) -> WebResult<AcademicPublicView> {
 		let id = req.param::<AcademicId>("id")?;
-		let academic = self.academics.find_view_by_id(&id).await?;
+		let academic = self.academics.find_public_view_by_id(&id).await?;
 
 		Ok(AcademicPublicView::from(academic))
 	}
@@ -67,6 +70,15 @@ impl AcademicsController {
 	pub async fn create_academic(&self, req: Request) -> WebResult<AcademicView> {
 		let input = req.body_validator::<CreateAcademicDto>()?;
 		let academic = self.academics.create(input).await?;
+
+		Ok(academic)
+	}
+
+	#[post("/{id}/unlink")]
+	#[interceptor(SessionCheck)]
+	pub async fn unlink_academic(&self, req: Request) -> WebResult<AcademicView> {
+		let id = req.param::<AcademicId>("id")?;
+		let academic = self.academics.unlink(&id).await?;
 
 		Ok(academic)
 	}

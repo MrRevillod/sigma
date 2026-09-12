@@ -182,75 +182,77 @@ impl StatsService {
 			Some(ProductivityJceScope::Doctor) | None => Some(DegreeKind::Doctor),
 		};
 
-		let (jce, academic_count) = match query.scope {
+		let jce_rows = match query.scope {
 			Some(ProductivityScope::Faculty) | None => {
-				let (jce, count) = tokio::join!(
-					self.stats.sum_jce(None, jce_kind),
-					self.stats.count_jce(None, jce_kind),
-				);
-				(jce?, count?)
+				self.stats
+					.jce_by_period(None, year_from, year_to, jce_kind)
+					.await?
 			}
 			Some(ProductivityScope::Department) => {
 				let Some(department_id) = query.department_id else {
 					return Err(StatsError::InvalidScopeParams)?;
 				};
 
-				let (jce, count) = tokio::join!(
-					self.stats.sum_jce(Some(department_id), jce_kind),
-					self.stats.count_jce(Some(department_id), jce_kind),
-				);
-				(jce?, count?)
+				self.stats
+					.jce_by_period(Some(department_id), year_from, year_to, jce_kind)
+					.await?
 			}
 			Some(ProductivityScope::ResearchLine) => {
 				let Some(research_line_id) = query.research_line_id else {
 					return Err(StatsError::InvalidScopeParams)?;
 				};
 
-				let (jce, count) = tokio::join!(
-					self.stats
-						.sum_jce_dominant_line(&research_line_id, jce_kind),
-					self.stats
-						.count_jce_dominant_line(&research_line_id, jce_kind),
-				);
-				(jce?, count?)
+				self.stats
+					.jce_by_period_research_line(&research_line_id, year_from, year_to, jce_kind)
+					.await?
 			}
 		};
+
+		let jce_max = self.config.jce_max().await?;
+
+		let jce_map: BTreeMap<i16, f64> = jce_rows
+			.into_iter()
+			.map(|r| {
+				let hours = r.jce.unwrap_or(0.0);
+				let jce = if jce_max > 0.0 { hours / jce_max } else { 0.0 };
+				(r.period, jce)
+			})
+			.collect();
 
 		let rows = self
 			.stats
 			.productivity_numerator(&query, month, year_from, year_to, degree)
 			.await?;
 
-		let jce_max = self.config.jce_max().await?;
-		let jce = if jce_max > 0.0 { jce / jce_max } else { 0.0 };
-
-		let factor = if jce > 0.0 { 1.0 / jce } else { 0.0 };
-
 		let mut total = Vec::new();
 		let mut wos = Vec::new();
 		let mut scopus = Vec::new();
 
 		for r in &rows {
+			let jce = jce_map.get(&r.period).copied().unwrap_or(0.0);
+			let factor = if jce > 0.0 { 1.0 / jce } else { 0.0 };
+
 			total.push(ProductivityYearValue {
 				year: r.period,
 				value: r.total.unwrap_or(0) as f64 * factor,
 				pubs: r.total.unwrap_or(0),
+				jce,
 			});
 			wos.push(ProductivityYearValue {
 				year: r.period,
 				value: r.wos.unwrap_or(0) as f64 * factor,
 				pubs: r.wos.unwrap_or(0),
+				jce,
 			});
 			scopus.push(ProductivityYearValue {
 				year: r.period,
 				value: r.scopus.unwrap_or(0) as f64 * factor,
 				pubs: r.scopus.unwrap_or(0),
+				jce,
 			});
 		}
 
 		Ok(ProductivityResponse {
-			jce,
-			academic_count,
 			trend: vec![
 				ProductivitySeries {
 					key: "total".into(),

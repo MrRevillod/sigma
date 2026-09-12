@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Academic } from "$academics/entity"
-	import { ChevronLeft, Pencil, ExternalLink, Send } from "@lucide/svelte"
+	import { ChevronLeft, Pencil, ExternalLink, Send, UserMinus } from "@lucide/svelte"
 	import { FullName } from "$shared/value-objects/full-name.value"
 
 	interface Props {
@@ -9,9 +9,17 @@
 		onEdit?: () => void
 		onRequestEdit?: () => void
 		onSendCodes?: () => void
+		onUnlink?: () => void
 	}
 
-	let { academic, readonly = false, onEdit, onRequestEdit, onSendCodes }: Props = $props()
+	let {
+		academic,
+		readonly = false,
+		onEdit,
+		onRequestEdit,
+		onSendCodes,
+		onUnlink,
+	}: Props = $props()
 
 	const nameObj = $derived(
 		FullName.of(academic.names, academic.paternalSurname, academic.maternalSurname),
@@ -44,6 +52,13 @@
 		</div>
 		<h1 class="text-lg font-semibold leading-snug">{fullName}</h1>
 		<p class="mt-1.5 text-sm text-white/60">{academic.email}</p>
+		{#if academic.isUnlinked}
+			<span
+				class="mt-3 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase text-white/80"
+			>
+				Desvinculado{#if academic.leftAt}· {academic.leftAt.toDisplayDate()}{/if}
+			</span>
+		{/if}
 	</div>
 
 	<div class="border-t border-white/10 px-6 py-4">
@@ -112,6 +127,18 @@
 			>
 				<Send class="size-4" />
 				Enviar códigos de edición
+			</button>
+		</div>
+	{/if}
+
+	{#if onUnlink}
+		<div class="border-t border-white/10 px-6 py-4">
+			<button
+				class="flex w-full items-center justify-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-red-100 transition-colors hover:bg-red-500/25 active:scale-[0.97]"
+				onclick={onUnlink}
+			>
+				<UserMinus class="size-4" />
+				Desvincular académico
 			</button>
 		</div>
 	{/if}

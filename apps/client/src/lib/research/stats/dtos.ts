@@ -136,6 +136,7 @@ export interface ProductivityYearValue {
 	year: number
 	value: number
 	pubs: number
+	jce: number
 }
 
 export interface ProductivitySeries {
@@ -144,7 +145,5 @@ export interface ProductivitySeries {
 }
 
 export interface ProductivityResponse {
-	jce: number
-	academicCount: number
 	trend: ProductivitySeries[]
 }

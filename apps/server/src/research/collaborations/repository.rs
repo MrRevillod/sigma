@@ -25,13 +25,21 @@ impl CollaborationsRepository {
 				FROM work_authorships wa1
 				JOIN work_authorships wa2 ON wa2.work_id = wa1.work_id
 				JOIN academics f ON f.id = $1 AND f.orcid = wa1.orcid
+				JOIN works w ON w.id = wa1.work_id
+					AND COALESCE(w.publication_date,
+						make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+						BETWEEN f.joined_at AND COALESCE(f.left_at, CURRENT_DATE)
 				WHERE NOT wa1.is_external AND NOT wa2.is_external AND wa2.orcid <> f.orcid
 			)
 			SELECT a.id, a.names, a.paternal_surname, a.maternal_surname,
 				d.name AS department,
-				COUNT(DISTINCT wa.work_id) AS total_works
+				COUNT(DISTINCT w.id) AS total_works
 			FROM academics a
 			LEFT JOIN work_authorships wa ON wa.orcid = a.orcid AND NOT wa.is_external
+			LEFT JOIN works w ON w.id = wa.work_id
+				AND COALESCE(w.publication_date,
+					make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+					BETWEEN a.joined_at AND COALESCE(a.left_at, CURRENT_DATE)
 			LEFT JOIN departments d ON d.id = a.department_id
 			WHERE a.id = $1
 				OR a.orcid IN (SELECT orcid FROM coauthors)
@@ -53,6 +61,10 @@ impl CollaborationsRepository {
 				FROM work_authorships wa1
 				JOIN work_authorships wa2 ON wa2.work_id = wa1.work_id
 				JOIN academics f ON f.id = $1 AND f.orcid = wa1.orcid
+				JOIN works w ON w.id = wa1.work_id
+					AND COALESCE(w.publication_date,
+						make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+						BETWEEN f.joined_at AND COALESCE(f.left_at, CURRENT_DATE)
 				WHERE NOT wa1.is_external AND NOT wa2.is_external AND wa2.orcid <> f.orcid
 			),
 			ego AS (
@@ -61,12 +73,19 @@ impl CollaborationsRepository {
 				SELECT orcid FROM coauthors
 			)
 			SELECT a1.id AS source_id, a2.id AS target_id,
-				COUNT(DISTINCT wa1.work_id) AS weight,
-				array_agg(DISTINCT wa1.work_id) AS work_ids
+				COUNT(DISTINCT w.id) AS weight,
+				array_agg(DISTINCT w.id) AS work_ids
 			FROM work_authorships wa1
 			JOIN work_authorships wa2 ON wa2.work_id = wa1.work_id AND wa2.orcid > wa1.orcid
 			JOIN academics a1 ON a1.orcid = wa1.orcid
 			JOIN academics a2 ON a2.orcid = wa2.orcid
+			JOIN works w ON w.id = wa1.work_id
+				AND COALESCE(w.publication_date,
+					make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+					BETWEEN a1.joined_at AND COALESCE(a1.left_at, CURRENT_DATE)
+				AND COALESCE(w.publication_date,
+					make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+					BETWEEN a2.joined_at AND COALESCE(a2.left_at, CURRENT_DATE)
 			WHERE NOT wa1.is_external AND NOT wa2.is_external
 				AND a1.orcid IN (SELECT orcid FROM ego)
 				AND a2.orcid IN (SELECT orcid FROM ego)
@@ -99,10 +118,14 @@ impl CollaborationsRepository {
 		sqlx::query_as::<_, RecommendationCandidateRow>(
 			"SELECT a.id, a.names, a.paternal_surname, a.maternal_surname,
 				d.name AS department,
-				COUNT(DISTINCT wa.work_id) AS total_works
+				COUNT(DISTINCT w.id) AS total_works
 			FROM academics a
 			JOIN departments d ON d.id = a.department_id
 			LEFT JOIN work_authorships wa ON wa.orcid = a.orcid AND NOT wa.is_external
+			LEFT JOIN works w ON w.id = wa.work_id
+				AND COALESCE(w.publication_date,
+					make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+					BETWEEN a.joined_at AND COALESCE(a.left_at, CURRENT_DATE)
 			WHERE a.id <> $1
 			GROUP BY a.id, a.names, a.paternal_surname, a.maternal_surname, d.name",
 		)
@@ -126,6 +149,9 @@ impl CollaborationsRepository {
 			JOIN academics a ON a.orcid = wa.orcid
 			JOIN topics t ON t.id = wts.topic_id
 			JOIN works w ON w.id = wts.work_id
+				AND COALESCE(w.publication_date,
+					make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+					BETWEEN a.joined_at AND COALESCE(a.left_at, CURRENT_DATE)
 			JOIN subfields sf ON sf.id = t.subfield_id
 			JOIN research_lines rl ON rl.id = sf.research_line_id AND rl.slug <> 'sin-asignar'
 			WHERE wts.score >= $1",
@@ -150,7 +176,10 @@ impl CollaborationsRepository {
 			JOIN academics a ON a.orcid = wa.orcid
 			JOIN keywords k ON k.id = wks.keyword_id
 			JOIN works w ON w.id = wks.work_id
-			WHERE wks.score >= $1",
+			WHERE wks.score >= $1
+				AND COALESCE(w.publication_date,
+					make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+					BETWEEN a.joined_at AND COALESCE(a.left_at, CURRENT_DATE)",
 		)
 		.bind(score_threshold)
 		.fetch_all(self.database.pool())
@@ -168,6 +197,10 @@ impl CollaborationsRepository {
 				FROM work_topic_scores wts
 				JOIN work_authorships wa ON wa.work_id = wts.work_id AND NOT wa.is_external
 				JOIN academics a ON a.orcid = wa.orcid
+				JOIN works w ON w.id = wts.work_id
+					AND COALESCE(w.publication_date,
+						make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+						BETWEEN a.joined_at AND COALESCE(a.left_at, CURRENT_DATE)
 				JOIN topics t ON t.id = wts.topic_id
 				JOIN subfields sf ON sf.id = t.subfield_id
 				JOIN research_lines rl ON rl.id = sf.research_line_id AND rl.slug <> 'sin-asignar'
@@ -179,6 +212,9 @@ impl CollaborationsRepository {
 				JOIN work_authorships wa ON wa.work_id = w.id AND NOT wa.is_external
 				JOIN academics a ON a.orcid = wa.orcid
 				JOIN research_lines rl ON rl.id = (w.overrides).research_line_id AND rl.slug <> 'sin-asignar'
+					AND COALESCE(w.publication_date,
+						make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+						BETWEEN a.joined_at AND COALESCE(a.left_at, CURRENT_DATE)
 			)
 			SELECT * FROM topic_lines
 			UNION

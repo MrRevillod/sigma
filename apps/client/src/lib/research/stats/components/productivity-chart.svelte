@@ -46,8 +46,10 @@
 		allYears.map((year) => {
 			const row: Record<string, number> = { year }
 			for (const s of data?.trend ?? []) {
-				row[s.key] = s.values.find((v) => v.year === year)?.value ?? 0
-				row[`pubs_${s.key}`] = s.values.find((v) => v.year === year)?.pubs ?? 0
+				const value = s.values.find((v) => v.year === year)
+				row[s.key] = value?.value ?? 0
+				row[`pubs_${s.key}`] = value?.pubs ?? 0
+				row["jce"] = value?.jce ?? 0
 			}
 			return row
 		}),
@@ -133,17 +135,18 @@
 				{#snippet children({ data: row })}
 					{@const s = series[0]}
 					{@const pubs = row[`pubs_${s.key}`] ?? 0}
-					{@const jce = data?.jce ?? 0}
+					{@const jce = row["jce"] ?? 0}
+					{@const jceFmt = jce.toLocaleString("es-CL", { maximumFractionDigits: 2 })}
 					<Tooltip.List>
 						<Tooltip.Item label={s.label} color={s.color} valueAlign="right">
 							<span class="inline-flex items-center gap-1.5">
 								<span class="flex flex-col items-center leading-none">
 									<span>{pubs} publicaciones</span>
 									<span class="my-0.5 w-7 grow border-t border-current"></span>
-									<span>{jce} horas de jornada</span>
+									<span>{jceFmt} JCE</span>
 								</span>
 								<span class="text-corp-gray">
-									= {valueFmt(row[s.key])} pub. por hora
+									= {valueFmt(row[s.key])} publicaciones por JCE
 								</span>
 							</span>
 						</Tooltip.Item>

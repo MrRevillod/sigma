@@ -92,3 +92,9 @@ pub struct ProductivityTrendRow {
 	pub wos: Option<i64>,
 	pub scopus: Option<i64>,
 }
+
+#[derive(Debug, FromRow)]
+pub struct JcePeriodRow {
+	pub period: i16,
+	pub jce: Option<f64>,
+}

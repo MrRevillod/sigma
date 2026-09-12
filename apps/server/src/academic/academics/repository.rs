@@ -17,7 +17,7 @@ impl AcademicsRepository {
 	pub async fn list(&self, filter: AcademicListFilter) -> AppResult<Vec<AcademicView>> {
 		let mut query = QueryBuilder::new(
 			"SELECT a.id, a.names, a.paternal_surname, a.maternal_surname,
-			        a.email, a.orcid, a.sex, a.birth_date, a.joined_at,
+			        a.email, a.orcid, a.sex, a.birth_date, a.joined_at, a.left_at,
 			        wp.name AS work_position,
 			        d.name AS department,
 			        c.name AS career,
@@ -72,6 +72,10 @@ impl AcademicsRepository {
 			query.push(" AND aco.option = ").push_bind(option);
 		}
 
+		if filter.include_unlinked != Some(true) {
+			query.push(" AND a.left_at IS NULL");
+		}
+
 		let items = query
 			.build_query_as::<AcademicView>()
 			.fetch_all(self.database.pool())
@@ -83,7 +87,7 @@ impl AcademicsRepository {
 	pub async fn find_view_by_id(&self, id: &AcademicId) -> AppResult<Option<AcademicView>> {
 		let item = sqlx::query_as::<_, AcademicView>(
 			"SELECT a.id, a.names, a.paternal_surname, a.maternal_surname,
-			        a.email, a.orcid, a.sex, a.birth_date, a.joined_at,
+			        a.email, a.orcid, a.sex, a.birth_date, a.joined_at, a.left_at,
 			        wp.name AS work_position,
 			        d.name AS department,
 			        c.name AS career,
@@ -144,6 +148,19 @@ impl AcademicsRepository {
 			.await?;
 
 		Ok(item)
+	}
+
+	pub async fn mark_unlinked(&self, id: &AcademicId) -> AppResult<bool> {
+		let result = sqlx::query(
+			"UPDATE academics
+			 SET left_at = CURRENT_DATE, updated_at = NOW()
+			 WHERE id = $1 AND left_at IS NULL",
+		)
+		.bind(id)
+		.execute(self.database.pool())
+		.await?;
+
+		Ok(result.rows_affected() > 0)
 	}
 
 	pub async fn save(&self, academic: &Academic) -> AppResult<()> {

@@ -12,6 +12,7 @@ export interface AcademicDTO {
 	sex: "H" | "M" | "O"
 	birthDate: string
 	joinedAt: string
+	leftAt: string | null
 	workPosition: string | null
 	department: string
 	career: string | null
@@ -50,6 +51,7 @@ export interface GetAcademicsParams {
 	categoryId?: string
 	planta?: "adjunta" | "permanente"
 	option?: "teaching" | "research"
+	includeUnlinked?: boolean
 	sort?: AcademicSortField
 }
 

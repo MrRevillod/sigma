@@ -48,8 +48,8 @@ export const degreePhrases: Record<ProductivityDegree, string> = {
 }
 
 export const jceScopePhrases: Record<ProductivityJceScope, string> = {
-	doctor: "las horas de jornada de los doctores",
-	all: "las horas de jornada de todos los académicos",
+	doctor: "la JCE de los doctores",
+	all: "la JCE de todos los académicos",
 }
 
 export function buildProductivityDescription(
@@ -57,7 +57,7 @@ export function buildProductivityDescription(
 	jceScope: ProductivityJceScope,
 	denominator: string,
 ): string {
-	return `${degreePhrases[degree]} por año, en relación a ${jceScopePhrases[jceScope]} ${denominator}.`
+	return `${degreePhrases[degree]} por año, divididas por ${jceScopePhrases[jceScope]} ${denominator}. La JCE se calcula por año con los académicos vinculados ese año.`
 }
 
 export type ProductivityIndexation = "all" | "wos" | "scopus"

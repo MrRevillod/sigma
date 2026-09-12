@@ -44,6 +44,7 @@ pub struct GetAcademicsQuery {
 	pub category_id: Option<AcademicCategoryId>,
 	pub planta: Option<AcademicPlanta>,
 	pub option: Option<AcademicOption>,
+	pub include_unlinked: Option<bool>,
 }
 
 fn validate_birth_date(date: &NaiveDate) -> Result<(), ValidationError> {

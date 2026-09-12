@@ -2006,6 +2006,7 @@ components:
         - year
         - value
         - pubs
+        - jce
       properties:
         year:
           type: integer
@@ -2014,12 +2015,20 @@ components:
         value:
           type: number
           format: double
-          description: Productividad (publicaciones por jornada)
+          description: Publicaciones por Jornada Completa Equivalente (JCE)
           example: 1.4
         pubs:
           type: integer
           description: Cantidad de publicaciones
           example: 14
+        jce:
+          type: number
+          format: double
+          description: >
+            Jornada Completa Equivalente del año: suma de las horas de jornada
+            de los académicos vinculados ese año, dividida por la jornada máxima
+            configurada (p. ej. 42,5 h = 1 JCE).
+          example: 7.0
 
     ProductivitySeries:
       description: Serie temporal de productividad
@@ -2041,19 +2050,8 @@ components:
       description: Resultado del análisis de productividad
       type: object
       required:
-        - jce
-        - academicCount
         - trend
       properties:
-        jce:
-          type: number
-          format: double
-          description: Jornada promedio considerada
-          example: 1.0
-        academicCount:
-          type: integer
-          description: Cantidad de académicos considerados
-          example: 85
         trend:
           type: array
           description: Series temporales de productividad

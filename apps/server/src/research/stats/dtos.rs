@@ -215,6 +215,7 @@ pub struct ProductivityYearValue {
 	pub year: i16,
 	pub value: f64,
 	pub pubs: i64,
+	pub jce: f64,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -227,8 +228,6 @@ pub struct ProductivitySeries {
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ProductivityResponse {
-	pub jce: f64,
-	pub academic_count: i64,
 	pub trend: Vec<ProductivitySeries>,
 }
 

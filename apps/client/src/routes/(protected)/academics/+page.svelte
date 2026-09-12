@@ -31,6 +31,7 @@
 		categoryId: v.optional(v.fallback(v.string(), ""), ""),
 		planta: v.optional(v.fallback(v.string(), ""), ""),
 		option: v.optional(v.fallback(v.string(), ""), ""),
+		includeUnlinked: v.optional(v.fallback(v.string(), ""), ""),
 	})
 
 	const params = useSearchParams(searchParamsSchema, {
@@ -63,7 +64,14 @@
 		...(params.categoryId && { categoryId: params.categoryId }),
 		...(params.planta && { planta: params.planta as GetAcademicsParams["planta"] }),
 		...(params.option && { option: params.option as GetAcademicsParams["option"] }),
+		...(params.includeUnlinked === "true" && { includeUnlinked: true }),
 	})
+
+	const showUnlinked = $derived(params.includeUnlinked === "true")
+
+	function toggleUnlinked() {
+		params.includeUnlinked = showUnlinked ? "" : "true"
+	}
 
 	let showCreateDialog = $state(false)
 	let importResult = $state<ImportResult | null>(null)
@@ -95,7 +103,7 @@
 
 	const helper = createColumnHelper<TableFeatures, Academic>()
 
-	const columns = [
+	const columns = $derived([
 		helper.accessor(
 			(row) => FullName.of(row.names, row.paternalSurname, row.maternalSurname).format(),
 			{
@@ -114,7 +122,15 @@
 			id: "option",
 			header: "Opción",
 		}),
-	]
+		...(showUnlinked
+			? [
+					helper.accessor((row) => (row.isUnlinked ? "Desvinculado" : "Activo"), {
+						id: "status",
+						header: "Estado",
+					}),
+				]
+			: []),
+	])
 </script>
 
 <div class="mx-auto flex h-full max-w-[1600px] flex-col px-4 py-8 sm:px-6 lg:px-8">
@@ -132,6 +148,8 @@
 			onClear={clearFilters}
 			onCreate={() => (showCreateDialog = true)}
 			onImport={(file) => importMutation.mutate(file)}
+			{showUnlinked}
+			onToggleUnlinked={toggleUnlinked}
 		/>
 
 		<main class="min-w-0 flex-1 overflow-y-auto">

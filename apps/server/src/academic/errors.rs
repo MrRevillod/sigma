@@ -63,6 +63,17 @@ pub enum AcademicError {
 	#[error("Académico no encontrado")]
 	AcademicNotFound,
 
+	#[http(code = 409, message = "El académico ya está desvinculado")]
+	#[error("El académico ya está desvinculado")]
+	AcademicAlreadyUnlinked,
+
+	#[http(
+		code = 409,
+		message = "El académico está desvinculado y no puede realizar esta acción"
+	)]
+	#[error("El académico está desvinculado y no puede realizar esta acción")]
+	AcademicUnlinked,
+
 	#[http(
 		code = 400,
 		message = "La JCE no puede superar el valor máximo configurado"

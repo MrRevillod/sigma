@@ -109,6 +109,9 @@ impl WorksRepository {
 			        JOIN academics a ON a.orcid = wa2.orcid
 			        WHERE wa2.is_external = false
 			            AND a.orcid != 'https://orcid.org/0000-0000-0000-0000'
+			            AND COALESCE(w.publication_date,
+			                make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+			                BETWEEN a.joined_at AND COALESCE(a.left_at, CURRENT_DATE)
 			            AND a.id = ",
 			);
 			qb.push_bind(academic_id);
@@ -123,6 +126,9 @@ impl WorksRepository {
 			        JOIN academics a ON a.orcid = wa2.orcid
 			        WHERE wa2.is_external = false
 			            AND a.orcid != 'https://orcid.org/0000-0000-0000-0000'
+			            AND COALESCE(w.publication_date,
+			                make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+			                BETWEEN a.joined_at AND COALESCE(a.left_at, CURRENT_DATE)
 			            AND a.department_id = ",
 			);
 			qb.push_bind(department_id);
@@ -137,6 +143,9 @@ impl WorksRepository {
 			        JOIN academics a ON a.orcid = wa2.orcid
 			        WHERE wa2.is_external = false
 			            AND a.orcid != 'https://orcid.org/0000-0000-0000-0000'
+			            AND COALESCE(w.publication_date,
+			                make_date(COALESCE((w.overrides).publication_year, w.publication_year), 1, 1))
+			                BETWEEN a.joined_at AND COALESCE(a.left_at, CURRENT_DATE)
 			            AND a.career_id = ",
 			);
 			qb.push_bind(career_id);

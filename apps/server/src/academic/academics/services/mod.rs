@@ -47,6 +47,21 @@ impl AcademicsService {
 			department_id: query.department_id,
 			option: query.option,
 			planta: query.planta,
+			include_unlinked: query.include_unlinked,
+		};
+
+		self.academics.list(filter).await
+	}
+
+	pub async fn find_active(&self, query: GetAcademicsQuery) -> AppResult<Vec<AcademicView>> {
+		let filter = AcademicListFilter {
+			search: query.search,
+			career_id: query.career_id,
+			category_id: query.category_id,
+			department_id: query.department_id,
+			option: query.option,
+			planta: query.planta,
+			include_unlinked: None,
 		};
 
 		self.academics.list(filter).await
@@ -58,6 +73,37 @@ impl AcademicsService {
 		};
 
 		Ok(view)
+	}
+
+	pub async fn find_public_view_by_id(&self, id: &AcademicId) -> AppResult<AcademicView> {
+		let view = self.find_view_by_id(id).await?;
+
+		if view.left_at.is_some() {
+			Err(AcademicError::AcademicNotFound)?;
+		}
+
+		Ok(view)
+	}
+
+	pub async fn unlink(&self, id: &AcademicId) -> AppResult<AcademicView> {
+		let Some(academic) = self.academics.find_by_id(id).await? else {
+			return Err(AcademicError::AcademicNotFound.into());
+		};
+
+		if academic.left_at.is_some() {
+			Err(AcademicError::AcademicAlreadyUnlinked)?;
+		}
+
+		self.academics.mark_unlinked(id).await?;
+		self.find_view_by_id(id).await
+	}
+
+	fn ensure_linked(academic: &Academic) -> AppResult<()> {
+		if academic.left_at.is_some() {
+			Err(AcademicError::AcademicUnlinked)?;
+		}
+
+		Ok(())
 	}
 
 	pub async fn create(&self, input: CreateAcademicDto) -> AppResult<AcademicView> {
@@ -230,6 +276,8 @@ impl AcademicsService {
 			return Err(AcademicError::AcademicNotFound)?;
 		};
 
+		Self::ensure_linked(&academic)?;
+
 		let Some(code_academic_id) = self.edit_codes.consume(code).await? else {
 			return Err(AcademicError::InvalidEditCode)?;
 		};
@@ -273,6 +321,8 @@ impl AcademicsService {
 		let Some(academic) = self.academics.find_by_id(id).await? else {
 			return Err(AcademicError::AcademicNotFound)?;
 		};
+
+		Self::ensure_linked(&academic)?;
 
 		let codes = self.edit_codes.ensure_vigentes(id).await?;
 
@@ -333,6 +383,8 @@ impl AcademicsService {
 		let Some(academic) = self.academics.find_by_id(&academic_id).await? else {
 			return Err(AcademicError::AcademicNotFound)?;
 		};
+
+		Self::ensure_linked(&academic)?;
 
 		if token_updated_at != academic.updated_at.timestamp() {
 			Err(AcademicError::InvalidOneTimeToken)?;

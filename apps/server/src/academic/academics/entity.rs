@@ -31,6 +31,7 @@ pub struct Academic {
 	pub sex: Sex,
 	pub birth_date: NaiveDate,
 	pub joined_at: NaiveDate,
+	pub left_at: Option<NaiveDate>,
 	pub work_position_id: AcademicWorkPositionId,
 	pub department_id: DepartmentId,
 	pub career_id: Option<CareerId>,
@@ -52,6 +53,7 @@ pub struct AcademicListFilter {
 	pub category_id: Option<AcademicCategoryId>,
 	pub planta: Option<AcademicPlanta>,
 	pub option: Option<AcademicOption>,
+	pub include_unlinked: Option<bool>,
 }
 
 impl Academic {

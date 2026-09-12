@@ -39,7 +39,7 @@
 	<div class="space-y-1">
 		<label
 			for="productivity-jce-scope"
-			title="Define quiénes aportan horas de jornada al indicador: solo doctores, o todos los académicos del alcance"
+			title="Define quiénes aportan JCE al indicador: solo doctores, o todos los académicos del alcance"
 			class="block text-[11px] font-medium uppercase tracking-wider text-corp-gray"
 		>
 			Académicos para la JCE

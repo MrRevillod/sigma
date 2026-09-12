@@ -23,6 +23,8 @@
 		onClear: () => void
 		onCreate: () => void
 		onImport?: (file: File) => void
+		showUnlinked: boolean
+		onToggleUnlinked: () => void
 	}
 
 	let {
@@ -38,6 +40,8 @@
 		onClear,
 		onCreate,
 		onImport,
+		showUnlinked,
+		onToggleUnlinked,
 	}: Props = $props()
 
 	const isAdmin = $derived(authStore.isAuthenticated)
@@ -137,6 +141,15 @@
 			<Label>Opción</Label>
 			<Select items={optionItems} bind:value={optionFilter} placeholder="Todas" />
 		</div>
+		<label class="flex cursor-pointer items-center gap-2 text-sm text-corp-gray">
+			<input
+				type="checkbox"
+				checked={showUnlinked}
+				onchange={onToggleUnlinked}
+				class="size-4 rounded border-corp-gray/30 text-corp-blue accent-corp-blue"
+			/>
+			Mostrar desvinculados
+		</label>
 	</div>
 
 	<Button variant="secondary" class="mt-6 w-full" onclick={onClear}>

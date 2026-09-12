@@ -16,6 +16,7 @@ pub struct AcademicView {
 	pub sex: Sex,
 	pub birth_date: NaiveDate,
 	pub joined_at: NaiveDate,
+	pub left_at: Option<NaiveDate>,
 	pub work_position: Option<String>,
 	pub department: String,
 	pub career: Option<String>,

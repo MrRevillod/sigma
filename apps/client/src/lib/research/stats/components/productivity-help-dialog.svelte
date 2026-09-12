@@ -23,9 +23,9 @@
 				Qué muestra este gráfico
 			</h3>
 			<p class="mt-2 text-sm leading-relaxed text-corp-gray">
-				Relaciona las publicaciones de cada año con la jornada completa de los académicos
-				del alcance elegido (facultad, departamento o línea de investigación). Cada punto
-				indica cuántas publicaciones se producen por hora de jornada trabajada.
+				Relaciona las publicaciones de cada año con la jornada completa equivalente (JCE) de
+				los académicos del alcance elegido (facultad, departamento o línea de
+				investigación). Cada punto indica cuántas publicaciones se producen por cada JCE.
 			</p>
 		</section>
 
@@ -35,10 +35,13 @@
 				Jornada Completa Equivalente (JCE)
 			</h3>
 			<p class="mt-2 text-sm leading-relaxed text-corp-gray">
-				La JCE es la medida del tiempo de trabajo de los académicos: un académico de jornada
-				completa equivale a 1 JCE, y media jornada a 0,5. Para calcular el indicador se
-				suman las horas de jornada de los académicos considerados, según el filtro
-				<span class="font-medium text-corp-ink">Académicos para la JCE</span>:
+				La JCE mide la jornada completa: se suman las horas de jornada de los académicos
+				considerados y se dividen por la jornada máxima configurada, de modo que el
+				resultado son jornadas completas equivalentes (por ejemplo, 42,5 h = 1 JCE). Este
+				valor es el denominador del indicador y se calcula año a año según los académicos
+				vinculados ese año. El filtro
+				<span class="font-medium text-corp-ink">Académicos para la JCE</span>
+				decide quiénes aportan:
 			</p>
 			<ul class="mt-2 space-y-0.5 text-sm text-corp-gray">
 				<li class="flex items-start gap-2.5">
@@ -64,6 +67,10 @@
 					</p>
 				</li>
 			</ul>
+			<p class="mt-3 text-sm leading-relaxed text-corp-gray">
+				Un académico desvinculado deja de aportar JCE desde su año de desvinculación. Sus
+				publicaciones del período en que estuvo vinculado se siguen contando.
+			</p>
 		</section>
 
 		<section>
@@ -90,8 +97,7 @@
 					></span>
 					<p>
 						<span class="font-medium text-corp-ink">Académicos para la JCE</span> — quiénes
-						aportan las horas de jornada al cálculo: solo doctores o todos los académicos
-						del alcance.
+						aportan JCE al cálculo: solo doctores o todos los académicos del alcance.
 					</p>
 				</li>
 				<li class="flex items-start gap-2.5">

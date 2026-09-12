@@ -17,6 +17,7 @@
 		Network,
 		Info,
 		Mail,
+		UserMinus,
 	} from "@lucide/svelte"
 
 	import { authStore } from "$lib/auth/store.svelte"
@@ -24,7 +25,7 @@
 	import { degreeService } from "$degrees/service"
 	import { academicService } from "$academics/service"
 	import { DegreeKindValue } from "$degrees/value-objects/kind.value"
-	import { useQuery, useMutation } from "$shared/http/tanstack"
+	import { useQuery, useMutation, queryClient } from "$shared/http/tanstack"
 
 	import Badge from "$shared/components/ui/badge.svelte"
 	import Button from "$shared/components/ui/button.svelte"
@@ -79,6 +80,7 @@
 	}))
 
 	const academic = $derived(academicQuery.data)
+	const isUnlinked = $derived(academic?.isUnlinked ?? false)
 	const degreeSlots = $derived.by<
 		Array<
 			| (Degree & { isPlaceholder: false })
@@ -154,8 +156,20 @@
 	let showEditAcademicDialog = $state(false)
 	let showGraphHelp = $state(false)
 	let showSendEditCodesConfirmDialog = $state(false)
+	let showUnlinkConfirmDialog = $state(false)
 
 	const isAdmin = $derived(authStore.isAuthenticated)
+
+	const unlinkMutation = useMutation(() => ({
+		mutationFn: () => academicService.unlink(id),
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: ["academic", id] })
+			void queryClient.invalidateQueries({ queryKey: ["academics"] })
+			toast.success("Académico desvinculado")
+			showUnlinkConfirmDialog = false
+		},
+		onError: () => toast.error("Error al desvincular al académico"),
+	}))
 
 	const sendEditCodesMutation = useMutation(() => ({
 		mutationFn: () => academicService.sendEditCodes(id),
@@ -195,8 +209,11 @@
 			<div class="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
 				<AcademicSidebar
 					{academic}
-					onEdit={() => (showEditAcademicDialog = true)}
-					onSendCodes={handleSendEditCodes}
+					onEdit={isUnlinked ? undefined : () => (showEditAcademicDialog = true)}
+					onSendCodes={isUnlinked ? undefined : handleSendEditCodes}
+					onUnlink={isAdmin && !isUnlinked
+						? () => (showUnlinkConfirmDialog = true)
+						: undefined}
 				/>
 
 				<div class="flex h-[calc(100dvh-10rem)] flex-col">
@@ -560,6 +577,42 @@
 				{:else}
 					<Mail class="size-4" />
 					Enviar código
+				{/if}
+			</Button>
+		</div>
+	</div>
+</Dialog>
+
+<Dialog
+	bind:open={showUnlinkConfirmDialog}
+	title="Desvincular académico"
+	description="El académico dejará de pertenecer a la universidad. Su historial y sus publicaciones se conservan."
+>
+	<div class="space-y-4">
+		<div class="rounded-lg bg-red-50 p-4 text-sm text-red-800">
+			<p>
+				Las publicaciones del académico seguirán contando para los años en que estuvo
+				vinculado, desde su fecha de ingreso hasta hoy. A partir de la desvinculación dejará
+				de contar para la JCE.
+			</p>
+			<p class="mt-2">Esta acción no se puede revertir desde la plataforma.</p>
+		</div>
+
+		<div class="flex justify-end gap-2">
+			<Button variant="secondary" onclick={() => (showUnlinkConfirmDialog = false)}>
+				Cancelar
+			</Button>
+			<Button
+				variant="danger"
+				disabled={unlinkMutation.isPending}
+				onclick={() => unlinkMutation.mutate()}
+			>
+				{#if unlinkMutation.isPending}
+					<Loader class="size-4 animate-spin" />
+					Desvinculando...
+				{:else}
+					<UserMinus class="size-4" />
+					Desvincular
 				{/if}
 			</Button>
 		</div>

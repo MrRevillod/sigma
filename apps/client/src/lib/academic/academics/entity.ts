@@ -18,6 +18,7 @@ export class Academic {
 		public sex: SexValue,
 		public birthDate: DateValue,
 		public joinedAt: DateValue,
+		public leftAt: DateValue | null,
 		public workPosition: string | null,
 		public department: string,
 		public career: string | null,
@@ -30,6 +31,10 @@ export class Academic {
 		public nationality: CountryValue,
 		public city: string,
 	) {}
+
+	public get isUnlinked(): boolean {
+		return this.leftAt !== null
+	}
 
 	public static fromDTO(dto: AcademicDTO): Academic {
 		const country = CountryValue.from(dto.nationality)
@@ -50,6 +55,7 @@ export class Academic {
 			sex,
 			birthDate,
 			joinedAt,
+			dto.leftAt ? DateValue.from(dto.leftAt) : null,
 			dto.workPosition,
 			dto.department,
 			dto.career,
@@ -83,6 +89,7 @@ export class Academic {
 			sex,
 			birthDate,
 			joinedAt,
+			null,
 			null,
 			dto.department,
 			dto.career,
