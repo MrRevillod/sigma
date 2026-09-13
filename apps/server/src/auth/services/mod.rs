@@ -9,6 +9,7 @@ use crate::{auth::*, shared::*};
 use chrono::{DateTime, Duration, Utc};
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
+use sword::events::EventPublisher;
 use sword::prelude::*;
 
 #[injectable]
@@ -18,6 +19,7 @@ pub struct AuthService {
 	jwt_service: Arc<JsonWebTokenService>,
 	sessions: Arc<SessionRepository>,
 	hasher: Arc<Hasher>,
+	events: Arc<EventPublisher>,
 }
 
 impl AuthService {
@@ -91,6 +93,67 @@ impl AuthService {
 			session.revoked_at = Some(Utc::now());
 			self.sessions.save(&session).await?;
 		}
+
+		Ok(())
+	}
+
+	pub async fn forgot_password(&self, input: &ForgotPasswordDto) -> AppResult<()> {
+		let Some(user) = self.users.find_by_email(&input.email).await? else {
+			return Ok(());
+		};
+
+		let expiration = Utc::now() + Duration::minutes(self.config.reset_exp_minutes);
+
+		let claims = PasswordResetClaims {
+			user_id: user.id,
+			pwd: Self::hash_token(&user.password_hash),
+			exp: expiration.timestamp(),
+			typ: "password_reset".to_string(),
+		};
+
+		let token = self
+			.jwt_service
+			.encode(&claims, self.config.jwt_secret.as_ref())?;
+
+		let reset_url = format!(
+			"{}/reset-password?token={}",
+			self.config.frontend_url, token
+		);
+
+		self.events
+			.publish(PasswordResetReqEvent {
+				user_name: user.name,
+				user_email: user.email,
+				reset_url,
+				expires_minutes: self.config.reset_exp_minutes,
+			})
+			.await;
+
+		Ok(())
+	}
+
+	pub async fn reset_password(&self, input: &ResetPasswordDto) -> AppResult<()> {
+		let claims = self
+			.jwt_service
+			.decode::<PasswordResetClaims>(&input.token, self.config.jwt_secret.as_ref())
+			.map_err(|_| AuthError::InvalidResetToken)?;
+
+		if claims.typ != "password_reset" {
+			Err(AuthError::InvalidResetToken)?;
+		}
+
+		let Some(mut user) = self.users.find_by_id(&claims.user_id).await? else {
+			return Err(AuthError::InvalidResetToken)?;
+		};
+
+		if claims.pwd != Self::hash_token(&user.password_hash) {
+			Err(AuthError::InvalidResetToken)?;
+		}
+
+		user.password_hash = self.hasher.hash(&input.password)?;
+		self.users.save(&user).await?;
+
+		self.sessions.revoke_all_for_user(&user.id).await?;
 
 		Ok(())
 	}

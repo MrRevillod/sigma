@@ -17,16 +17,18 @@ Si los datos son incorrectos, aparece el mensaje de error entregado por el servi
 
 ## Recuperar la contraseña
 
-Bajo el formulario hay un enlace **¿Olvidaste tu contraseña?** que abre el portal de cambio de contraseña, para ello deberás ingresar tu correo electrónico y seguir las instrucciones que llegarán a tu bandeja de entrada.
+Bajo el formulario hay un enlace **¿Olvidaste tu contraseña?** que abre la pantalla **Recuperar contraseña**. Ingresa tu correo electrónico y presiona **Enviar enlace**: si el correo está registrado, recibirás un mensaje con un enlace para definir una nueva contraseña.
+
+> Importante: por seguridad, la pantalla siempre muestra el mismo mensaje, exista o no la cuenta.
 
 > Importante: si no recibes el correo, revisa la carpeta de spam o correo no deseado.
 
 <figure class="manual-figure">
-  <img src="/manual/reset-password.png" alt="Pantalla de Recuperación de Contraseña" />
+  <img src="/manual/reset-password.webp" alt="Pantalla de Recuperación de Contraseña" />
   <figcaption>Pantalla de Recuperación de Contraseña.</figcaption>
 </figure>
 
-> Importante: los enlaces de cambio de contraseña pueden expirar así que debes utilizarlo en el momento que lo recibas.
+> Importante: el enlace es personal, de un solo uso y expira a los 30 minutos, así que debes usarlo en el momento que lo recibas. Al cambiar la contraseña se cierran todas tus sesiones activas.
 
 ## Mantener la sesión
 

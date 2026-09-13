@@ -29,6 +29,7 @@ acquire_timeout_ms = 5000
 jwt_secret = "${JWT_SECRET}"
 access_exp_minutes = 15
 refresh_exp_days = 7
+reset_exp_minutes = 30
 frontend_url = "${FRONTEND_URL}"
 
 [cookies]

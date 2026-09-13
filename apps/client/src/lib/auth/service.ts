@@ -1,5 +1,5 @@
 import type { UserDTO } from "$lib/users/dtos"
-import type { LoginDTO } from "./dtos"
+import type { ForgotPasswordDTO, LoginDTO, ResetPasswordDTO } from "./dtos"
 
 import { User } from "$lib/users/entity"
 import { http } from "$lib/shared/http/client"
@@ -18,6 +18,24 @@ class AuthService {
 		})
 
 		return user.then((user) => User.fromDTO(user))
+	}
+
+	public async forgotPassword(input: ForgotPasswordDTO): Promise<void> {
+		return http.request<void>({
+			method: "POST",
+			url: "/auth/forgot-password",
+			data: input,
+			skipRefresh: true,
+		})
+	}
+
+	public async resetPassword(input: ResetPasswordDTO): Promise<void> {
+		return http.request<void>({
+			method: "POST",
+			url: "/auth/reset-password",
+			data: { token: input.token, password: input.password },
+			skipRefresh: true,
+		})
 	}
 
 	public async logout(): Promise<void> {

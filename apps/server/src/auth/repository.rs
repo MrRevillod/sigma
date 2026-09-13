@@ -1,5 +1,5 @@
 use crate::{
-	auth::{Session, SessionId},
+	auth::{Session, SessionId, UserId},
 	shared::{AppResult, Database},
 };
 
@@ -70,5 +70,16 @@ impl SessionRepository {
 		.await?;
 
 		Ok(res)
+	}
+
+	pub async fn revoke_all_for_user(&self, user_id: &UserId) -> AppResult<()> {
+		sqlx::query(
+			"UPDATE sessions SET revoked_at = NOW() WHERE user_id = $1 AND revoked_at IS NULL",
+		)
+		.bind(user_id)
+		.execute(self.database.pool())
+		.await?;
+
+		Ok(())
 	}
 }

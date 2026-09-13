@@ -31,7 +31,7 @@ pub struct CreateUserDto {
 	pub role: UserRole,
 }
 
-fn validate_password(password: &str) -> Result<(), ValidationError> {
+pub(crate) fn validate_password(password: &str) -> Result<(), ValidationError> {
 	let mut missing = Vec::new();
 
 	if password.len() < 8 {

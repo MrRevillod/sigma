@@ -1,20 +1,29 @@
-mod controller;
 mod dtos;
 mod entity;
 mod errors;
+mod events;
 mod interceptor;
 mod repository;
 mod services;
 mod users;
+mod controllers {
+	mod events;
+	mod web;
 
-pub use controller::*;
+	pub use events::AuthEventsController;
+	pub use web::AuthController;
+}
+
 pub use dtos::*;
 pub use entity::*;
 pub use errors::*;
+pub use events::*;
 pub use interceptor::*;
 pub use repository::*;
 pub use services::*;
 pub use users::*;
+
+use controllers::{AuthController, AuthEventsController};
 
 use serde::Deserialize;
 use sword::prelude::*;
@@ -24,6 +33,7 @@ use sword::prelude::*;
 pub struct AuthConfig {
 	pub access_exp_minutes: i64,
 	pub refresh_exp_days: i64,
+	pub reset_exp_minutes: i64,
 	pub jwt_secret: String,
 	pub frontend_url: String,
 }
@@ -34,6 +44,7 @@ impl Module for AuthModule {
 	fn register_controllers(controllers: &ControllerRegistry) {
 		controllers.register::<AuthController>();
 		controllers.register::<UsersController>();
+		controllers.register::<AuthEventsController>();
 	}
 
 	fn register_components(components: &ComponentRegistry) {

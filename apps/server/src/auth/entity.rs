@@ -35,3 +35,11 @@ pub struct SessionClaims {
 	pub exp: i64,
 	pub typ: String,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PasswordResetClaims {
+	pub user_id: UserId,
+	pub pwd: String,
+	pub exp: i64,
+	pub typ: String,
+}

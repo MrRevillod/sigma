@@ -6,7 +6,7 @@ info:
     API de autenticación y gestión de usuarios del sistema.
 
     Proporciona operaciones de:
-      - **Autenticación** (`/auth/login`, `/auth/refresh`, `/auth/logout`)
+      - **Autenticación** (`/auth/login`, `/auth/refresh`, `/auth/logout`, `/auth/forgot-password`, `/auth/reset-password`)
       - **Usuarios** (`/users`)
 
     La autenticación se realiza mediante cookies HTTP-only con JWT.
@@ -141,6 +141,76 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
       security:
         - CookieAuth: []
+
+  # ============================================================================
+  # AUTH - FORGOT PASSWORD
+  # ============================================================================
+  /auth/forgot-password:
+    post:
+      tags:
+        - Autenticación
+      summary: Solicitar recuperación de contraseña
+      description: >
+        Envía un correo con un enlace de recuperación si el email corresponde a
+        un usuario registrado. Por seguridad, la respuesta es siempre la misma
+        exista o no la cuenta (evita enumeración de correos). El enlace expira
+        en 30 minutos y es de un solo uso.
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordDto"
+      responses:
+        "200":
+          description: Solicitud procesada (respuesta genérica)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          description: Error de validación en los datos de entrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+      security: []
+
+  # ============================================================================
+  # AUTH - RESET PASSWORD
+  # ============================================================================
+  /auth/reset-password:
+    post:
+      tags:
+        - Autenticación
+      summary: Restablecer contraseña
+      description: >
+        Define una nueva contraseña a partir del token enviado por correo.
+        El token es de un solo uso: queda inválido tras usarse o si la
+        contraseña cambia. Al restablecerla se revocan todas las sesiones
+        activas del usuario.
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordDto"
+      responses:
+        "200":
+          description: Contraseña actualizada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "400":
+          description: Token inválido/expirado o error de validación
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security: []
 
   # ============================================================================
   # USERS - LIST
@@ -478,6 +548,45 @@ components:
           format: password
           description: Contraseña del usuario
           minLength: 1
+          maxLength: 255
+          example: "MyStr0ng!Pass"
+
+    # ==========================================================================
+    # FORGOT PASSWORD DTO
+    # ==========================================================================
+    ForgotPasswordDto:
+      description: Correo electrónico para solicitar la recuperación de contraseña
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario registrado
+          example: admin@example.com
+
+    # ==========================================================================
+    # RESET PASSWORD DTO
+    # ==========================================================================
+    ResetPasswordDto:
+      description: Token de recuperación y nueva contraseña
+      type: object
+      required:
+        - token
+        - password
+      properties:
+        token:
+          type: string
+          description: Token de recuperación recibido por correo
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        password:
+          type: string
+          format: password
+          description: >
+            Nueva contraseña. Debe tener al menos 8 caracteres, incluyendo
+            una mayúscula, una minúscula, un número y un carácter especial.
+          minLength: 8
           maxLength: 255
           example: "MyStr0ng!Pass"
 

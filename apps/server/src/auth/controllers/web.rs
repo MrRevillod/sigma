@@ -41,6 +41,25 @@ impl AuthController {
 		Ok(JsonResponse::Ok().data(user))
 	}
 
+	#[post("/forgot-password")]
+	pub async fn forgot_password(&self, req: Request) -> WebResult {
+		let dto = req.body_validator::<ForgotPasswordDto>()?;
+
+		self.auth_service.forgot_password(&dto).await?;
+
+		Ok(JsonResponse::Ok()
+			.message("Si el correo está registrado, recibirás un enlace de recuperación"))
+	}
+
+	#[post("/reset-password")]
+	pub async fn reset_password(&self, req: Request) -> WebResult {
+		let dto = req.body_validator::<ResetPasswordDto>()?;
+
+		self.auth_service.reset_password(&dto).await?;
+
+		Ok(JsonResponse::Ok().message("Contraseña actualizada correctamente"))
+	}
+
 	#[post("/refresh")]
 	pub async fn refresh(&self, req: Request) -> WebResult {
 		let Some(refresh_cookie) = req.cookies()?.get("ACAD_MGR_REFRESH_TOKEN") else {

@@ -29,6 +29,13 @@ pub enum AuthError {
 	#[error("Email already exists")]
 	EmailAlreadyExists,
 
+	#[http(
+		code = 400,
+		message = "El enlace de recuperación es inválido o ha expirado"
+	)]
+	#[error("Invalid password reset token")]
+	InvalidResetToken,
+
 	#[http(code = 403)]
 	#[tracing(error)]
 	#[error("JWT Error: {0}")]

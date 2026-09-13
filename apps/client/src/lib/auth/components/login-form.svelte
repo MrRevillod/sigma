@@ -94,9 +94,7 @@
 			<p class="mr-auto text-sm text-corp-gray">
 				<a
 					class="font-medium text-corp-blue underline decoration-corp-blue/30 underline-offset-3 hover:decoration-corp-blue/60"
-					href="https://chpass.inf.uct.cl"
-					target="_blank"
-					rel="noopener noreferrer"
+					href="/forgot-password"
 				>
 					¿Olvidaste tu contraseña?
 				</a>

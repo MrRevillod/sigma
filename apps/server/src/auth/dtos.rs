@@ -1,4 +1,4 @@
-use crate::auth::UserView;
+use crate::auth::{UserView, validate_password};
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -18,6 +18,21 @@ pub struct LoginDto {
 		max = 255,
 		message = "La contraseña es obligatoria y debe tener entre 1 y 255 caracteres."
 	))]
+	pub password: String,
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct ForgotPasswordDto {
+	#[validate(email(message = "El atributo 'email' debe ser un correo electrónico válido"))]
+	pub email: String,
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct ResetPasswordDto {
+	#[validate(length(min = 1, message = "El token es obligatorio"))]
+	pub token: String,
+
+	#[validate(custom(function = "validate_password"))]
 	pub password: String,
 }
 

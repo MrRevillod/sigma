@@ -61,7 +61,7 @@ export type UpdateUserDTO = v.InferInput<typeof updateUserDTOSchema>
 
 // Password validation ----------------------------------------
 
-const validatePassword = (pw: string) => {
+export const validatePassword = (pw: string) => {
 	const missing: string[] = []
 
 	if (pw.length < 8) missing.push("al menos 8 caracteres")
