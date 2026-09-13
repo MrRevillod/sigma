@@ -1,4 +1,5 @@
-use crate::academic::{AcademicId, AcademicOption, AcademicPlanta, Sex};
+use crate::academic::{AcademicCategoryOptionId, AcademicId, AcademicOption, AcademicPlanta, Sex};
+use crate::university::{AcademicWorkPositionId, CareerId, DepartmentId};
 
 use chrono::NaiveDate;
 use serde::Serialize;
@@ -17,10 +18,14 @@ pub struct AcademicView {
 	pub birth_date: NaiveDate,
 	pub joined_at: NaiveDate,
 	pub left_at: Option<NaiveDate>,
+	pub work_position_id: AcademicWorkPositionId,
 	pub work_position: Option<String>,
+	pub department_id: DepartmentId,
 	pub department: String,
+	pub career_id: Option<CareerId>,
 	pub career: Option<String>,
 	pub jce: f64,
+	pub acad_category_options_id: AcademicCategoryOptionId,
 	pub category: String,
 	pub planta: AcademicPlanta,
 	pub option: AcademicOption,

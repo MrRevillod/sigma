@@ -13,10 +13,14 @@ export interface AcademicDTO {
 	birthDate: string
 	joinedAt: string
 	leftAt: string | null
+	workPositionId: string
 	workPosition: string | null
+	departmentId: string
 	department: string
+	careerId: string | null
 	career: string | null
 	jce: number
+	acadCategoryOptionsId: string
 	category: string
 	planta: "adjunta" | "permanente"
 	option: "teaching" | "research"
@@ -193,6 +197,20 @@ export const updateAcademicDTOSchema = (jceMax: number) =>
 		),
 		sex: v.optional(v.picklist(["H", "M", "O"], "Seleccione una opción válida")),
 		birthDate: v.optional(v.string()),
+		joinedAt: v.optional(v.string()),
+		workPositionId: v.optional(v.pipe(v.string(), v.nonEmpty("Seleccione un cargo"))),
+		departmentId: v.optional(v.pipe(v.string(), v.nonEmpty("Seleccione un departamento"))),
+		careerId: v.optional(
+			v.nullable(
+				v.pipe(
+					v.string(),
+					v.transform((s) => (s === "" ? null : s)),
+				),
+			),
+		),
+		acadCategoryOptionsId: v.optional(
+			v.pipe(v.string(), v.nonEmpty("Seleccione una opción de categoría")),
+		),
 		city: v.optional(textField("La ciudad debe tener entre 1 y 255 caracteres")),
 		nationalityCode: v.optional(
 			v.pipe(v.string(), v.length(2, "El código de país debe tener 2 caracteres")),

@@ -18,10 +18,14 @@ impl AcademicsRepository {
 		let mut query = QueryBuilder::new(
 			"SELECT a.id, a.names, a.paternal_surname, a.maternal_surname,
 			        a.email, a.orcid, a.sex, a.birth_date, a.joined_at, a.left_at,
+			        a.work_position_id,
 			        wp.name AS work_position,
+			        a.department_id,
 			        d.name AS department,
+			        a.career_id,
 			        c.name AS career,
 			        a.jce,
+			        a.acad_category_options_id,
 			        ac.name AS category,
 			        ac.planta,
 			        aco.option,
@@ -88,10 +92,14 @@ impl AcademicsRepository {
 		let item = sqlx::query_as::<_, AcademicView>(
 			"SELECT a.id, a.names, a.paternal_surname, a.maternal_surname,
 			        a.email, a.orcid, a.sex, a.birth_date, a.joined_at, a.left_at,
+			        a.work_position_id,
 			        wp.name AS work_position,
+			        a.department_id,
 			        d.name AS department,
+			        a.career_id,
 			        c.name AS career,
 			        a.jce,
+			        a.acad_category_options_id,
 			        ac.name AS category,
 			        ac.planta,
 			        aco.option,
@@ -122,7 +130,6 @@ impl AcademicsRepository {
 		Ok(item)
 	}
 
-	#[allow(dead_code)]
 	pub async fn find_by_email(&self, email: &str) -> AppResult<Option<Academic>> {
 		let item = sqlx::query_as::<_, Academic>("SELECT * FROM academics WHERE email = $1")
 			.bind(email)

@@ -59,6 +59,10 @@ pub enum AcademicError {
 	#[error("Ya existe un académico con el mismo ORCID")]
 	AcademicOrcidAlreadyExists,
 
+	#[http(code = 409, message = "Ya existe un académico con el mismo email")]
+	#[error("Ya existe un académico con el mismo email")]
+	AcademicEmailAlreadyExists,
+
 	#[http(code = 404, message = "Académico no encontrado")]
 	#[error("Académico no encontrado")]
 	AcademicNotFound,

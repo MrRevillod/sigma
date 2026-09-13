@@ -163,6 +163,14 @@ impl AcademicsService {
 			academic.maternal_surname = maternal_surname.clone();
 		}
 
+		if let Some(ref email) = input.email {
+			if self.academics.find_by_email(email).await?.is_some() && *email != academic.email {
+				Err(AcademicError::AcademicEmailAlreadyExists)?;
+			}
+
+			academic.email = email.clone();
+		}
+
 		if let Some(ref orcid) = input.orcid {
 			if self.academics.find_by_orcid(orcid).await?.is_some()
 				&& Some(orcid.as_str()) != academic.orcid.as_deref()

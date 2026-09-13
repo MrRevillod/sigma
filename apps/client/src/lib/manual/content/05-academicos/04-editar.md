@@ -2,19 +2,20 @@
 
 Desde la ficha, presiona el ícono de lápiz en la tarjeta azul. El diálogo **Editar académico** permite modificar:
 
-- **Nombres**, **Apellido paterno**, **Apellido materno**
-- **Email**
-- **ORCID**
-- **Sexo**
-- **Fecha de nacimiento**
-- **Ciudad**
-- **Nacionalidad**
-- **JCE** y **Horas descuento anual**
+- **Datos personales**: **Nombres**, **Apellido paterno**, **Apellido materno**, **Email**, **ORCID**, **Sexo**, **Fecha de nacimiento**, **Ciudad** y **Nacionalidad**.
+- **Información laboral**: **Fecha de ingreso**, **Cargo**, **Departamento** y **Carrera**.
+- **Categorización académica**: **Categoría**, **Opción**, **JCE** y **Horas descuento anual**.
 
-No se editan aquí el **RUT**, **Departamento**, **Carrera**, **Cargo**, **Categoría**, **Opción** ni **Planta**: esos datos se definen al crear el académico o mediante importación CSV.
+Reglas:
+
+- El **Email** y el **ORCID** deben ser únicos entre los académicos.
+- La **Carrera** debe pertenecer al **Departamento** seleccionado; al cambiar de departamento la carrera se limpia. Puedes dejarla en **Sin carrera**.
+- La **JCE** no puede superar la jornada máxima configurada.
+
+El **RUT** no se edita: se define al crear el académico o mediante importación CSV.
 
 <figure class="manual-figure">
-  <img src="/manual/academicos-editar.png" alt="Diálogo Editar académico con los campos modificables" />
+  <img src="/manual/academicos-editar.webp" alt="Diálogo Editar académico con los campos modificables" />
   <figcaption>Edición de un académico.</figcaption>
 </figure>
 

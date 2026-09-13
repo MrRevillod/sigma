@@ -30,6 +30,9 @@ pub struct UpdateAcademicDto {
 	))]
 	pub maternal_surname: Option<String>,
 
+	#[validate(email(message = "El email debe ser válido"))]
+	pub email: Option<String>,
+
 	#[validate(regex(
 		path = *ORCID_ID_REGEX,
 		message = "El ORCID debe ser una URL válida (https://orcid.org/XXXX-XXXX-XXXX-XXXX)"

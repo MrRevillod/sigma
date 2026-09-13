@@ -547,11 +547,6 @@
 				<li class="flex items-start gap-2">
 					<span class="mt-1.5 inline-block size-1.5 shrink-0 rounded-full bg-corp-blue"
 					></span>
-					<span>Correo electrónico</span>
-				</li>
-				<li class="flex items-start gap-2">
-					<span class="mt-1.5 inline-block size-1.5 shrink-0 rounded-full bg-corp-blue"
-					></span>
 					<span>ORCID y otras ID externas</span>
 				</li>
 			</ul>

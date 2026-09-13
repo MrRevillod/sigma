@@ -1586,8 +1586,11 @@ components:
         - sex
         - birthDate
         - joinedAt
+        - workPositionId
+        - departmentId
         - department
         - jce
+        - acadCategoryOptionsId
         - category
         - planta
         - option
@@ -1643,15 +1646,31 @@ components:
             sigue activo. Las publicaciones se atribuyen solo dentro del
             período [joinedAt, leftAt].
           example: "2026-09-12"
+        workPositionId:
+          type: string
+          format: uuid
+          description: UUID del cargo laboral
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
         workPosition:
           type: string
           description: Nombre del cargo laboral
           nullable: true
           example: Docente
+        departmentId:
+          type: string
+          format: uuid
+          description: UUID del departamento al que pertenece
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
         department:
           type: string
           description: Nombre del departamento al que pertenece
           example: Ciencias Matemáticas y Físicas
+        careerId:
+          type: string
+          format: uuid
+          description: UUID de la carrera asociada
+          nullable: true
+          example: c3d4e5f6-a7b8-9012-cdef-123456789012
         career:
           type: string
           description: Nombre de la carrera asociada
@@ -1664,6 +1683,11 @@ components:
           minimum: 0
           maximum: 1
           example: 0.5
+        acadCategoryOptionsId:
+          type: string
+          format: uuid
+          description: UUID de la opción de categoría académica
+          example: b2c3d4e5-f6a7-8901-bcde-f12345678901
         category:
           type: string
           description: Nombre de la categoría académica
@@ -1913,6 +1937,11 @@ components:
           minLength: 1
           maxLength: 255
           example: Martínez
+        email:
+          type: string
+          format: email
+          description: Correo electrónico (debe ser único)
+          example: jlopez@uct.cl
         orcid:
           type: string
           description: >
