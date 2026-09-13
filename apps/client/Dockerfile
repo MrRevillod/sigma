@@ -10,14 +10,15 @@ COPY ./apps/client/.npmrc ./
 RUN npm install -g pnpm@11.6.0 && pnpm install --frozen-lockfile --ignore-scripts
 
 FROM base AS builder
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
 COPY ./apps/client/ ./
 RUN pnpm build
 
 FROM nginx:alpine AS prod
 COPY --from=builder /app/build /usr/share/nginx/html
-COPY config/nginx.prod.conf /etc/nginx/nginx.conf
+COPY config/nginx.prod.conf.template /etc/nginx/templates/default.conf.template
+COPY config/nginx-security-headers.conf /etc/nginx/snippets/security-headers.conf
+ENV API_URL=http://server:8000
+ENV NGINX_ENVSUBST_FILTER=^API_
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 

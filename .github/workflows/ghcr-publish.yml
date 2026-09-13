@@ -10,9 +10,10 @@ on:
       - "apps/client/Dockerfile"
       - "Cargo.toml"
       - "Cargo.lock"
-      - "config/nginx.prod.conf"
+      - "config/nginx.prod.conf.template"
+      - "config/nginx-security-headers.conf"
       - ".dockerignore"
-      - ".github/workflows/ghcr-images.yml"
+      - ".github/workflows/ghcr-publish.yml"
   workflow_dispatch:
 
 permissions:
@@ -46,12 +47,13 @@ jobs:
               - 'Cargo.toml'
               - 'Cargo.lock'
               - '.dockerignore'
-              - '.github/workflows/ghcr-images.yml'
+              - '.github/workflows/ghcr-publish.yml'
             client:
               - 'apps/client/**'
-              - 'config/nginx.prod.conf'
+              - 'config/nginx.prod.conf.template'
+              - 'config/nginx-security-headers.conf'
               - '.dockerignore'
-              - '.github/workflows/ghcr-images.yml'
+              - '.github/workflows/ghcr-publish.yml'
 
       - name: Resolve build targets
         id: changes
@@ -161,7 +163,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            VITE_API_URL=https://api-academic-mgr.inf.uct.cl/api
           cache-from: type=gha
           cache-to: type=gha,mode=max
