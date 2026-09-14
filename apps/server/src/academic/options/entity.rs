@@ -1,9 +1,7 @@
-use bon::Builder;
+use crate::academic::AcademicCategoryId;
+use crate::shared::{Entity, Id};
 
-use crate::{
-	academic::AcademicCategoryId,
-	shared::{Entity, Id},
-};
+use bon::Builder;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, Type};
 

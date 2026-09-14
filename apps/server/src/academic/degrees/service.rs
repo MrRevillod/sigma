@@ -1,4 +1,6 @@
-use crate::{academic::*, shared::AppResult};
+use crate::academic::*;
+use crate::shared::AppResult;
+
 use std::sync::Arc;
 use sword::prelude::*;
 
@@ -13,7 +15,7 @@ impl DegreesService {
 	}
 
 	pub async fn create(&self, input: CreateDegreeDto) -> AppResult<Degree> {
-		if is_superior_degree(input.kind)
+		if self.is_superior_degree(input.kind)
 			&& self.degrees.count_superior(&input.academic_id).await? > 0
 		{
 			Err(AcademicError::DegreeSuperiorAlreadyExists)?;
@@ -39,7 +41,8 @@ impl DegreesService {
 		};
 
 		let new_kind = input.kind.unwrap_or(degree.kind);
-		if is_superior_degree(new_kind)
+
+		if self.is_superior_degree(new_kind)
 			&& self
 				.degrees
 				.count_superior_excluding(&degree.academic_id, degree_id)
@@ -47,6 +50,7 @@ impl DegreesService {
 		{
 			Err(AcademicError::DegreeSuperiorAlreadyExists)?;
 		}
+
 		if let Some(name) = input.name {
 			degree.name = name;
 		}
@@ -71,8 +75,8 @@ impl DegreesService {
 
 		Ok(degree)
 	}
-}
 
-fn is_superior_degree(kind: DegreeKind) -> bool {
-	matches!(kind, DegreeKind::Magister | DegreeKind::Doctor)
+	fn is_superior_degree(&self, kind: DegreeKind) -> bool {
+		matches!(kind, DegreeKind::Magister | DegreeKind::Doctor)
+	}
 }

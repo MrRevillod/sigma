@@ -3,18 +3,15 @@ mod imports;
 
 pub use edition_codes::*;
 pub use imports::*;
-use serde_json::{Value, json};
 
-use crate::{
-	academic::*,
-	auth::AuthConfig,
-	config::ConfigService,
-	research::{
-		SyncResultView, WorkId, WorkOverridesInput, WorksError, WorksImportService, WorksService,
-	},
-	shared::{AppResult, JsonWebTokenService},
-	university::*,
-};
+use crate::academic::*;
+use crate::auth::AuthConfig;
+use crate::config::ConfigService;
+use crate::research::*;
+use crate::shared::*;
+use crate::university::*;
+
+use serde_json::{Value, json};
 use std::sync::Arc;
 use sword::{events::EventPublisher, prelude::*};
 
@@ -523,6 +520,7 @@ impl AcademicsService {
 	) -> AppResult<()> {
 		let academic_id = self.validate_one_time_token(token).await?;
 		self.ensure_can_edit_work(&work_id, &academic_id).await?;
+
 		self.works
 			.update_authorship_affiliations(work_id, orcid, affiliations)
 			.await

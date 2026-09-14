@@ -32,6 +32,7 @@ impl DegreesController {
 	pub async fn update_degree(&self, req: Request) -> WebResult<Degree> {
 		let degree_id = req.param::<DegreeId>("id")?;
 		let input = req.body_validator::<UpdateDegreeDto>()?;
+
 		let degree = self.degrees.update(&degree_id, input).await?;
 
 		Ok(degree)

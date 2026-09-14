@@ -1,9 +1,9 @@
-use std::sync::Arc;
-
 use crate::shared::{AppResult, Database};
 use crate::university::faculties::Faculty;
 use crate::university::{FacultyFilter, FacultyId};
+
 use sqlx::{Postgres, QueryBuilder};
+use std::sync::Arc;
 use sword::prelude::*;
 
 #[injectable]

@@ -1,4 +1,4 @@
-use crate::academic::{AcademicCategoryOptionId, AcademicId, AcademicOption, AcademicPlanta, Sex};
+use crate::academic::*;
 use crate::university::{AcademicWorkPositionId, CareerId, DepartmentId};
 
 use chrono::NaiveDate;

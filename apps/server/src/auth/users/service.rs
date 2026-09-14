@@ -1,7 +1,4 @@
-use crate::auth::{
-	AuthError, CreateUserDto, GetUsersQuery, Hasher, UpdateUserDto, User, UserFilter, UserId,
-	UserView, UsersRepository,
-};
+use crate::auth::*;
 use crate::shared::AppResult;
 
 use std::sync::Arc;
@@ -63,12 +60,15 @@ impl UsersService {
 		if let Some(name) = dto.name {
 			user.name = name;
 		}
+
 		if let Some(email) = dto.email {
 			user.email = email;
 		}
+
 		if let Some(role) = dto.role {
 			user.role = role;
 		}
+
 		if let Some(password) = dto.password {
 			user.password_hash = self.hasher.hash(&password)?;
 		}

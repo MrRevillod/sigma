@@ -1,10 +1,10 @@
-mod import;
-mod openalex;
-mod orcid;
-
 use crate::academic::AcademicId;
 use crate::research::*;
 use crate::shared::AppResult;
+
+mod import;
+mod openalex;
+mod orcid;
 
 pub use import::WorksImportService;
 pub use openalex::*;

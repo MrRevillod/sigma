@@ -3,6 +3,7 @@ mod categories;
 mod degrees;
 mod errors;
 mod options;
+
 pub use academics::*;
 pub use categories::*;
 pub use degrees::*;

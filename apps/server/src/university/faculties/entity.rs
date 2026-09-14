@@ -1,4 +1,5 @@
 use crate::shared::{Entity, Id};
+
 use bon::Builder;
 use serde::Serialize;
 use sqlx::FromRow;

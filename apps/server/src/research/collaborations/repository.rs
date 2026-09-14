@@ -1,11 +1,7 @@
-use crate::{
-	academic::AcademicId,
-	research::{
-		AcademicKeywordRow, AcademicLineRow, AcademicTopicRow, CollaborationEdgeRow,
-		CollaborationNodeRow, RecommendationCandidateRow, WorkId, WorkRef,
-	},
-	shared::{AppResult, Database},
-};
+use crate::academic::AcademicId;
+use crate::research::*;
+use crate::shared::{AppResult, Database};
+
 use std::sync::Arc;
 use sword::prelude::*;
 

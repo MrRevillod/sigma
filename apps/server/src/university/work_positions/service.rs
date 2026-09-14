@@ -1,4 +1,5 @@
-use crate::{shared::AppResult, university::*};
+use crate::shared::AppResult;
+use crate::university::*;
 
 use std::sync::Arc;
 use sword::prelude::*;

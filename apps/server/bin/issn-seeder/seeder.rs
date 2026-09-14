@@ -11,9 +11,11 @@ pub async fn seed_records(
 
 	for chunk in records.chunks(CHUNK_SIZE) {
 		let mut tx = pool.begin().await?;
+
 		for issn in chunk {
 			total_affected += upsert_one(&mut tx, issn, kind).await?;
 		}
+
 		tx.commit().await?;
 	}
 

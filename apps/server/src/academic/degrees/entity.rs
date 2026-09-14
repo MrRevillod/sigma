@@ -1,8 +1,7 @@
-use bon::Builder;
-
 use crate::academic::academics::AcademicId;
 use crate::shared::{Entity, Id};
 
+use bon::Builder;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, Type};

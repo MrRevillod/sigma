@@ -622,6 +622,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 	eprintln!("Connected to database");
 
 	let mut updated = 0u64;
+
 	for (openalex_id, slug) in MAPPINGS {
 		let result = sqlx::query(
 			"UPDATE subfields
@@ -640,5 +641,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 		"Done — {updated} subfields updated ({} total)",
 		MAPPINGS.len()
 	);
+
 	Ok(())
 }

@@ -1,7 +1,5 @@
-use crate::{
-	auth::UserId,
-	shared::{Entity, Id},
-};
+use crate::auth::UserId;
+use crate::shared::{Entity, Id};
 
 use bon::Builder;
 use chrono::{DateTime, Utc};

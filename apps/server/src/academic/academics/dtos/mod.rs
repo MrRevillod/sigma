@@ -10,10 +10,8 @@ pub use self_update::*;
 pub use token::*;
 pub use update::*;
 
-use crate::{
-	academic::{AcademicCategoryId, AcademicOption, AcademicPlanta},
-	university::{CareerId, DepartmentId},
-};
+use crate::academic::{AcademicCategoryId, AcademicOption, AcademicPlanta};
+use crate::university::{CareerId, DepartmentId};
 
 use chrono::{NaiveDate, Utc};
 use regex::Regex;

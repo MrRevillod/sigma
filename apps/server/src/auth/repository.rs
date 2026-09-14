@@ -1,7 +1,5 @@
-use crate::{
-	auth::{Session, SessionId, UserId},
-	shared::{AppResult, Database},
-};
+use crate::auth::{Session, SessionId, UserId};
+use crate::shared::{AppResult, Database};
 
 use std::sync::Arc;
 use sword::prelude::*;

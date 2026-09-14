@@ -1,7 +1,6 @@
-use crate::{
-	academic::AcademicId,
-	research::{WorkId, WorkRef},
-};
+use crate::academic::AcademicId;
+use crate::research::{WorkId, WorkRef};
+
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;

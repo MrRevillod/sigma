@@ -1,8 +1,6 @@
 use super::*;
-use crate::{
-	academic::{AcademicOption, AcademicPlanta, DegreeKind, Sex},
-	shared::{CLf64, Country},
-};
+use crate::academic::{AcademicOption, AcademicPlanta, DegreeKind, Sex};
+use crate::shared::{CLf64, Country};
 
 use chrono::NaiveDate;
 use serde::Deserialize;

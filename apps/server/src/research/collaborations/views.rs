@@ -2,6 +2,7 @@ use crate::{
 	academic::AcademicId,
 	research::{KeywordId, ResearchLineId, TopicId, WorkId},
 };
+
 use serde::Serialize;
 use sqlx::FromRow;
 

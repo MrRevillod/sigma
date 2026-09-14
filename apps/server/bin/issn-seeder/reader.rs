@@ -1,9 +1,9 @@
-use std::path::Path;
-
 use csv::ReaderBuilder;
+use std::path::Path;
 
 fn normalize(value: &str) -> Option<String> {
 	let cleaned = value.trim().replace('-', "").to_uppercase();
+
 	if cleaned.is_empty() {
 		None
 	} else {

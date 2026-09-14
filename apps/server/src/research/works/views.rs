@@ -1,4 +1,6 @@
-use crate::{academic::AcademicId, research::*};
+use crate::academic::AcademicId;
+use crate::research::*;
+
 use serde::Serialize;
 use sqlx::{FromRow, Row, postgres::PgRow};
 use uuid::Uuid;

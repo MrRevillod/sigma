@@ -1,4 +1,5 @@
 use crate::university::DepartmentId;
+
 use sword::web::*;
 use thiserror::Error;
 

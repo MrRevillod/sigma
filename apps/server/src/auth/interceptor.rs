@@ -1,7 +1,5 @@
-use crate::{
-	auth::{AuthConfig, SessionClaims, SessionRepository},
-	shared::JsonWebTokenService,
-};
+use crate::auth::{AuthConfig, SessionClaims, SessionRepository};
+use crate::shared::JsonWebTokenService;
 
 use std::sync::Arc;
 use sword::prelude::*;

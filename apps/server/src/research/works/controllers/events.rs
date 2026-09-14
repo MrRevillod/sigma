@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-use std::sync::Arc;
-
 use crate::research::{SyncSummary, SyncWorksRequest, WorksImportService};
 use crate::shared::{Mail, Mailer, TemplateRenderer};
+
+use std::collections::HashMap;
+use std::sync::Arc;
 
 use sword::events::*;
 use sword::prelude::*;

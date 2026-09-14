@@ -23,4 +23,5 @@ pub use repository::WorksRepository;
 pub use services::{
 	OpenAlexClient, OpenAlexConfig, OpenAlexWorkExt, OrcidClient, WorksImportService, WorksService,
 };
+
 pub use views::*;

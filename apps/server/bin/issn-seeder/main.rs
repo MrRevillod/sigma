@@ -22,17 +22,23 @@ async fn main() -> Result<(), Box<dyn Error>> {
 		&& let Ok(zip_url) = std::env::var("ISSN_ZIP_URL")
 	{
 		eprintln!("Downloading ISSN CSVs from: {zip_url}");
+
 		std::fs::create_dir_all(data_dir)?;
+
 		let response = reqwest::get(&zip_url).await?;
 		let bytes = response.bytes().await?;
+
 		let mut reader = std::io::Cursor::new(&bytes);
 		let mut archive = zip::ZipArchive::new(&mut reader)?;
+
 		for i in 0..archive.len() {
 			let mut file = archive.by_index(i)?;
 			let out_path = data_dir.join(file.name());
 			let mut out = std::fs::File::create(&out_path)?;
+
 			std::io::copy(&mut file, &mut out)?;
 		}
+
 		eprintln!("  Extracted {} files", archive.len());
 	}
 
@@ -46,19 +52,24 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 	for (filename, kind) in files {
 		let path = data_dir.join(filename);
+
 		if !path.exists() {
 			eprintln!("Skipping {filename} (file not found)");
 			continue;
 		}
 
 		eprintln!("Reading {filename}...");
+
 		let records = reader::read_csv(&path)?;
+
 		eprintln!("  {} records loaded, inserting...", records.len());
 
 		let affected = seeder::seed_records(&pool, &records, kind).await?;
+
 		eprintln!("  Done — {} rows affected", affected);
 	}
 
 	eprintln!("\nSeeding complete.");
+
 	Ok(())
 }

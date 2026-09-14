@@ -16,11 +16,13 @@ impl Progress {
 	pub fn tick(&mut self, summary: &str) {
 		self.completed += 1;
 		self.summaries.push(summary.to_string());
+
 		eprintln!("[{}/{}] {summary}", self.completed, self.total);
 	}
 
 	pub fn print_summary(&self) {
 		eprintln!("\n=== Seeding complete ===");
+
 		for s in &self.summaries {
 			eprintln!("  {s}");
 		}

@@ -48,8 +48,10 @@ pub async fn seed_domains(
 	domains: &[Domain],
 ) -> Result<u64, Box<dyn std::error::Error>> {
 	let mut inserted = 0u64;
+
 	for domain in domains {
 		let name = domain.display_name.as_deref().unwrap_or("Unknown");
+
 		let result = sqlx::query(
 			"INSERT INTO domains (openalex_id, name) VALUES ($1, $2) ON CONFLICT (openalex_id) DO NOTHING",
 		)
@@ -57,8 +59,10 @@ pub async fn seed_domains(
 		.bind(name)
 		.execute(pool)
 		.await?;
+
 		inserted += result.rows_affected();
 	}
+
 	Ok(inserted)
 }
 
@@ -67,6 +71,7 @@ pub async fn seed_fields(
 	fields: &[Field],
 ) -> Result<u64, Box<dyn std::error::Error>> {
 	let mut inserted = 0u64;
+
 	for field in fields {
 		let name = field.display_name.as_deref().unwrap_or("Unknown");
 		let domain_openalex_id = field
@@ -74,6 +79,7 @@ pub async fn seed_fields(
 			.as_ref()
 			.and_then(|d| d.id.as_deref())
 			.unwrap_or("unknown");
+
 		let result = sqlx::query(
             "INSERT INTO fields (openalex_id, name, domain_id) VALUES ($1, $2, COALESCE((SELECT id FROM domains WHERE openalex_id = $3), $4::uuid)) ON CONFLICT (openalex_id) DO NOTHING",
         )
@@ -83,8 +89,10 @@ pub async fn seed_fields(
         .bind(UNKNOWN_ID)
         .execute(pool)
         .await?;
+
 		inserted += result.rows_affected();
 	}
+
 	Ok(inserted)
 }
 
@@ -93,6 +101,7 @@ pub async fn seed_subfields(
 	subfields: &[Subfield],
 ) -> Result<u64, Box<dyn std::error::Error>> {
 	let mut inserted = 0u64;
+
 	for subfield in subfields {
 		let name = subfield.display_name.as_deref().unwrap_or("Unknown");
 		let field_openalex_id = subfield
@@ -100,6 +109,7 @@ pub async fn seed_subfields(
 			.as_ref()
 			.and_then(|f| f.id.as_deref())
 			.unwrap_or("unknown");
+
 		let result = sqlx::query(
             "INSERT INTO subfields (openalex_id, name, field_id) VALUES ($1, $2, COALESCE((SELECT id FROM fields WHERE openalex_id = $3), $4::uuid)) ON CONFLICT (openalex_id) DO NOTHING",
         )
@@ -109,8 +119,10 @@ pub async fn seed_subfields(
         .bind(UNKNOWN_ID)
         .execute(pool)
         .await?;
+
 		inserted += result.rows_affected();
 	}
+
 	Ok(inserted)
 }
 
@@ -119,6 +131,7 @@ pub async fn seed_topics(
 	topics: &[Topic],
 ) -> Result<u64, Box<dyn std::error::Error>> {
 	let mut inserted = 0u64;
+
 	for topic in topics {
 		let name = topic.display_name.as_deref().unwrap_or("Unknown");
 		let subfield_openalex_id = topic
@@ -126,6 +139,7 @@ pub async fn seed_topics(
 			.as_ref()
 			.and_then(|s| extract_hierarchy_id(&s.id))
 			.unwrap_or_else(|| "unknown".to_string());
+
 		let result = sqlx::query(
             "INSERT INTO topics (openalex_id, name, subfield_id) VALUES ($1, $2, COALESCE((SELECT id FROM subfields WHERE openalex_id = $3), $4::uuid)) ON CONFLICT (openalex_id) DO NOTHING",
         )
@@ -135,8 +149,10 @@ pub async fn seed_topics(
         .bind(UNKNOWN_ID)
         .execute(pool)
         .await?;
+
 		inserted += result.rows_affected();
 	}
+
 	Ok(inserted)
 }
 

@@ -9,7 +9,7 @@ mod controllers {
 mod dtos;
 mod entity;
 mod events;
-mod repository;
+mod repositories;
 mod services;
 mod views;
 
@@ -17,6 +17,6 @@ pub use controllers::*;
 pub use dtos::*;
 pub use entity::*;
 pub use events::*;
-pub use repository::*;
+pub use repositories::*;
 pub use services::*;
 pub use views::*;
