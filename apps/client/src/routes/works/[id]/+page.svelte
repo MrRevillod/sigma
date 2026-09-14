@@ -19,19 +19,16 @@
 
 	import { page } from "$app/state"
 	import { goto } from "$app/navigation"
-
 	import { authStore } from "$auth/store.svelte"
-
 	import { DateValue } from "$shared/value-objects/date.value"
 	import { WORK_TYPE_LABELS } from "$works/dtos"
-
 	import { useWorkDetailQuery } from "$works/queries"
 
 	import Badge from "$shared/components/ui/badge.svelte"
 	import Dialog from "$shared/components/ui/dialog.svelte"
 	import HtmlRenderer from "$shared/components/ui/html-renderer.svelte"
-	import WorkAuthorsList from "$works/components/work-authors-list.svelte"
 	import WorkEditForm from "$works/components/work-edit-form.svelte"
+	import WorkAuthorsList from "$works/components/work-authors-list.svelte"
 
 	const id = $derived(page.params.id ?? "")
 

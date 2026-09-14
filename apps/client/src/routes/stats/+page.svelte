@@ -1,6 +1,5 @@
 <script lang="ts">
-	import * as v from "valibot"
-	import type { StatsQuery } from "$stats/dtos"
+	import { statsParamsDTOSchema, type StatsQuery } from "$stats/dtos"
 
 	import { useSearchParams } from "runed/kit"
 	import { useWorksStatsQuery } from "$stats/queries"
@@ -8,21 +7,10 @@
 
 	import Button from "$shared/components/ui/button.svelte"
 	import YearRange from "$shared/components/ui/year-range.svelte"
-
 	import KpiStrip from "$stats/components/kpi-strip.svelte"
 	import StatsHub from "$stats/components/stats-hub.svelte"
 
-	const currentYear = new Date().getFullYear()
-	const defaultYearFrom = String(currentYear - 5)
-	const defaultYearTo = String(currentYear)
-
-	const searchParamsSchema = v.object({
-		yearFrom: v.optional(v.fallback(v.string(), defaultYearFrom), defaultYearFrom),
-		yearTo: v.optional(v.fallback(v.string(), defaultYearTo), defaultYearTo),
-		limit: v.optional(v.fallback(v.string(), "10"), "10"),
-	})
-
-	const params = useSearchParams(searchParamsSchema, {
+	const params = useSearchParams(statsParamsDTOSchema, {
 		debounce: 300,
 		pushHistory: false,
 	})

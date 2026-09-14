@@ -27,3 +27,24 @@ export class DegreeKindValue {
 }
 
 export type DegreeKind = (typeof DegreeKindValue.KINDS)[number]
+
+export const DEGREE_KIND_META: Record<
+	string,
+	{ label: string; badge: "base" | "advanced" | "doctor"; dot: string }
+> = {
+	professional: {
+		label: DegreeKindValue.LABELS.professional,
+		badge: "base",
+		dot: "bg-corp-blue",
+	},
+	magister: {
+		label: DegreeKindValue.LABELS.magister,
+		badge: "advanced",
+		dot: "bg-corp-yellow",
+	},
+	doctor: {
+		label: DegreeKindValue.LABELS.doctor,
+		badge: "doctor",
+		dot: "bg-corp-gold",
+	},
+}

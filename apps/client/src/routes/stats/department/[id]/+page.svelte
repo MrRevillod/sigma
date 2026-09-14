@@ -11,7 +11,6 @@
 	import Button from "$shared/components/ui/button.svelte"
 	import Select from "$shared/components/ui/select.svelte"
 	import YearRange from "$shared/components/ui/year-range.svelte"
-
 	import DepartmentStats from "$stats/components/department-stats.svelte"
 
 	const deptId = $derived(page.params.id ?? "")

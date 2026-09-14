@@ -22,10 +22,6 @@
 			? `${authStore.isAuthenticated ? "/academics" : "/public/academics"}/${coauthorId}`
 			: "#",
 	)
-
-	function openWork(id: string) {
-		void goto(`/works/${id}`)
-	}
 </script>
 
 <Dialog
@@ -43,7 +39,7 @@
 					<button
 						type="button"
 						class="group flex w-full items-start gap-3 px-1 py-3 text-left transition-colors"
-						onclick={() => openWork(work.id)}
+						onclick={() => goto(`/works/${work.id}`)}
 					>
 						<span
 							class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-corp-blue/5"

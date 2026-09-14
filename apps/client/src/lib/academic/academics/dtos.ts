@@ -278,3 +278,14 @@ export interface ImportRowError {
 	row: number
 	reasons: string[]
 }
+
+// Academic detail filter params --------------------------------------
+
+const yearFromDefault = String(new Date().getFullYear() - 5)
+
+export const academicFiltersParamsDTOSchema = v.object({
+	yearFrom: v.optional(v.fallback(v.string(), yearFromDefault), yearFromDefault),
+	yearTo: v.optional(v.fallback(v.string(), ""), ""),
+	researchLineId: v.optional(v.fallback(v.string(), ""), ""),
+	journalKind: v.optional(v.fallback(v.string(), ""), ""),
+})

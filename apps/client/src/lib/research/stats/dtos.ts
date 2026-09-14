@@ -1,3 +1,5 @@
+import * as v from "valibot"
+
 export interface StatsQuery {
 	journalKind?: "wos" | "scopus"
 	departmentId?: string
@@ -147,3 +149,15 @@ export interface ProductivitySeries {
 export interface ProductivityResponse {
 	trend: ProductivitySeries[]
 }
+
+// Stats search params schema
+
+const currentYear = new Date().getFullYear()
+const defaultYearFrom = String(currentYear - 5)
+const defaultYearTo = String(currentYear)
+
+export const statsParamsDTOSchema = v.object({
+	yearFrom: v.optional(v.fallback(v.string(), defaultYearFrom), defaultYearFrom),
+	yearTo: v.optional(v.fallback(v.string(), defaultYearTo), defaultYearTo),
+	limit: v.optional(v.fallback(v.string(), "10"), "10"),
+})

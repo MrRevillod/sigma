@@ -1,30 +1,16 @@
 <script lang="ts">
-	import * as v from "valibot"
-	import type { Work } from "$works/entity"
 	import type { JournalKind } from "$works/value-objects/journal-kind.value"
-	import type { GetWorksParams } from "$works/dtos"
+	import { worksFilterDTOSchema, type GetWorksParams } from "$works/dtos"
 
+	import { goto } from "$app/navigation"
 	import { useWorksQuery } from "$works/queries"
 	import { useSearchParams } from "runed/kit"
 	import { CircleAlert, BookOpen, Loader } from "@lucide/svelte"
-	import { goto } from "$app/navigation"
 
 	import WorksTable from "$works/components/works-table.svelte"
 	import WorksFilters from "$works/components/works-filters.svelte"
 
-	const yearFromDefault = String(new Date().getFullYear() - 5)
-
-	const schema = v.object({
-		search: v.optional(v.fallback(v.string(), ""), ""),
-		departmentId: v.optional(v.fallback(v.string(), ""), ""),
-		careerId: v.optional(v.fallback(v.string(), ""), ""),
-		yearFrom: v.optional(v.fallback(v.string(), yearFromDefault), yearFromDefault),
-		yearTo: v.optional(v.fallback(v.string(), ""), ""),
-		journalKind: v.optional(v.fallback(v.string(), ""), ""),
-		researchLineId: v.optional(v.fallback(v.string(), ""), ""),
-	})
-
-	const params = useSearchParams(schema, { debounce: 300, pushHistory: false })
+	const params = useSearchParams(worksFilterDTOSchema, { debounce: 300, pushHistory: false })
 
 	let filters = $derived<GetWorksParams>({
 		size: 100,
@@ -38,14 +24,6 @@
 	})
 
 	const worksQuery = useWorksQuery(() => filters)
-
-	function openWork(work: Work) {
-		void goto(`/works/${work.id}`)
-	}
-
-	function clearFilters() {
-		params.reset()
-	}
 </script>
 
 <div class="mx-auto flex h-full max-w-[1600px] flex-col px-4 py-8 sm:px-6 lg:px-8">
@@ -58,7 +36,7 @@
 			bind:yearTo={params.yearTo}
 			bind:journalKind={params.journalKind}
 			bind:researchLineId={params.researchLineId}
-			onClear={clearFilters}
+			onClear={() => params.reset()}
 		/>
 
 		<main class="min-w-0 flex-1 overflow-y-auto">
@@ -85,7 +63,10 @@
 					</p>
 				</div>
 			{:else}
-				<WorksTable works={worksQuery.data} onRowClick={openWork} />
+				<WorksTable
+					works={worksQuery.data}
+					onRowClick={(work) => goto(`/works/${work.id}`)}
+				/>
 			{/if}
 		</main>
 	</div>

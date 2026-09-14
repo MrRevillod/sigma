@@ -8,6 +8,8 @@
 	import { extractToc } from "$manual/markdown"
 	import { findPage } from "$manual/sections"
 
+	import "$manual/manual.css"
+
 	let { children }: { children: Snippet } = $props()
 
 	const entry = $derived(findPage(page.params.section, page.params.page))

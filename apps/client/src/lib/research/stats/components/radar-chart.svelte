@@ -1,9 +1,5 @@
 <script lang="ts">
-	interface RadarItem {
-		name: string
-		acronym: string
-		count: number
-	}
+	import type { RadarItem } from "../chart-types"
 
 	interface Props {
 		items: RadarItem[]

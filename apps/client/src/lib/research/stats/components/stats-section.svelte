@@ -31,7 +31,7 @@
 </script>
 
 <section class={first ? "" : "border-t border-corp-gray/20"}>
-	<div class="flex items-center transition-colors hover:bg-corp-gray/[0.03]">
+	<div class="flex items-center transition-colors hover:bg-corp-gray/3">
 		<button
 			type="button"
 			class="flex min-w-0 flex-1 items-center gap-2 px-5 py-4 text-left"

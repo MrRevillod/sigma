@@ -1,9 +1,5 @@
 <script lang="ts">
-	interface Segment {
-		label: string
-		value: number
-		color: string
-	}
+	import type { Segment } from "../chart-types"
 
 	interface Props {
 		segments: Segment[]

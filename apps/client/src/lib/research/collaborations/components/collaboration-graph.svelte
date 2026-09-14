@@ -1,19 +1,11 @@
 <script lang="ts">
 	import type { Academic } from "$academics/entity"
 	import type {
-		CollaborationNodeDTO,
 		CollaborationRecommendationDTO,
 		CollaborationWorkRefDTO,
 	} from "$collaborations/dtos"
 
-	import {
-		forceCenter,
-		forceCollide,
-		forceLink,
-		forceManyBody,
-		type SimulationLinkDatum,
-		type SimulationNodeDatum,
-	} from "d3-force"
+	import { forceCenter, forceCollide, forceLink, forceManyBody } from "d3-force"
 	import { Chart, Circle, Layer, Link, Tooltip, type ChartState } from "layerchart"
 	import { ForceSimulation } from "layerchart/force"
 	import { CircleAlert, Loader, Network, SlidersHorizontal, X } from "@lucide/svelte"
@@ -22,6 +14,8 @@
 	import { useCollaborationGraphQuery } from "$collaborations/queries"
 	import { FullName } from "$shared/value-objects/full-name.value"
 	import { useDebounce } from "runed"
+
+	import type { GraphLink, GraphNode } from "../graph-types"
 
 	import EdgeWorksDialog from "./edge-works-dialog.svelte"
 	import RecommendationDetailDialog from "./recommendation-detail-dialog.svelte"
@@ -62,25 +56,6 @@
 	const focusName = $derived(
 		FullName.of(academic.names, academic.paternalSurname, academic.maternalSurname).format(),
 	)
-
-	type NodeKind = "focus" | "coauthor" | "recommendation"
-
-	type GraphNode = CollaborationNodeDTO &
-		SimulationNodeDatum & {
-			displayName: string
-			kind: NodeKind
-			weight: number
-		}
-
-	type LinkKind = "coauthor" | "recommendation"
-
-	type GraphLink = {
-		source: string
-		target: string
-		weight: number
-		kind: LinkKind
-		works: CollaborationWorkRefDTO[]
-	} & SimulationLinkDatum<GraphNode>
 
 	const graphNodes = $derived.by<GraphNode[]>(() => {
 		const coauthorNodes: GraphNode[] = (graph?.nodes ?? []).map((n) => ({

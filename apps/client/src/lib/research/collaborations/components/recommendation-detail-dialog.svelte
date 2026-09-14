@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type {
 		CollaborationRecommendationDTO,
-		RecommendationSharedItemDTO,
 		RecommendationWorkDTO,
 	} from "$collaborations/dtos"
+	import type { Interest } from "$collaborations/types"
 
 	import { Flame, Tag } from "@lucide/svelte"
 	import { goto } from "$app/navigation"
@@ -12,15 +12,6 @@
 	import HtmlRenderer from "$shared/components/ui/html-renderer.svelte"
 	import { authStore } from "$lib/auth/store.svelte"
 	import { FullName } from "$shared/value-objects/full-name.value"
-
-	interface Interest {
-		type: RecommendationSharedItemDTO["type"]
-		id: string
-		name: string
-		bestScore: number
-		focusWorks: RecommendationWorkDTO[]
-		candidateWorks: RecommendationWorkDTO[]
-	}
 
 	interface Props {
 		open: boolean
@@ -78,10 +69,6 @@
 		}
 		return Object.values(byKey).sort((a, b) => b.bestScore - a.bestScore)
 	})
-
-	function openWork(workId: string) {
-		void goto(`/works/${workId}`)
-	}
 
 	function typePillClass(type: "topic" | "keyword"): string {
 		return type === "topic"
@@ -221,7 +208,7 @@
 			side === "focus" ? "bg-corp-blue/5 text-corp-blue" : "bg-green-600/5 text-green-700"
 		}`}
 		title={work.title}
-		onclick={() => openWork(work.workId)}
+		onclick={() => goto(`/works/${work.workId}`)}
 	>
 		{#if work.publicationYear}
 			<span class="shrink-0 tabular-nums">{work.publicationYear}</span>

@@ -1,3 +1,5 @@
+import * as v from "valibot"
+
 import type { JournalKind } from "./value-objects/journal-kind.value"
 import type { AuthorshipPosition } from "./value-objects/position.value"
 
@@ -141,3 +143,17 @@ export interface SyncResult {
 	keywordsLinked: number
 	errors: string[]
 }
+
+// Works filter DTOs =========================
+
+const yearFromDefault = String(new Date().getFullYear() - 5)
+
+export const worksFilterDTOSchema = v.object({
+	search: v.optional(v.fallback(v.string(), ""), ""),
+	departmentId: v.optional(v.fallback(v.string(), ""), ""),
+	careerId: v.optional(v.fallback(v.string(), ""), ""),
+	yearFrom: v.optional(v.fallback(v.string(), yearFromDefault), yearFromDefault),
+	yearTo: v.optional(v.fallback(v.string(), ""), ""),
+	journalKind: v.optional(v.fallback(v.string(), ""), ""),
+	researchLineId: v.optional(v.fallback(v.string(), ""), ""),
+})

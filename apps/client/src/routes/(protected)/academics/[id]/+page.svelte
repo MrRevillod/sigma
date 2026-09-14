@@ -24,7 +24,11 @@
 	import { CLf64Value } from "$shared/value-objects/cl-f64.value"
 	import { degreeService } from "$degrees/service"
 	import { academicService } from "$academics/service"
-	import { DegreeKindValue } from "$degrees/value-objects/kind.value"
+	import { academicFiltersParamsDTOSchema } from "$academics/dtos"
+	import {
+		DegreeKindValue,
+		DEGREE_KIND_META as degreeKindMeta,
+	} from "$degrees/value-objects/kind.value"
 	import { useQuery, useMutation, queryClient } from "$shared/http/tanstack"
 
 	import Badge from "$shared/components/ui/badge.svelte"
@@ -40,16 +44,7 @@
 
 	const id = $derived(page.params.id ?? "")
 
-	const yearFromDefault = String(new Date().getFullYear() - 5)
-
-	const filtersParamsSchema = v.object({
-		yearFrom: v.optional(v.fallback(v.string(), yearFromDefault), yearFromDefault),
-		yearTo: v.optional(v.fallback(v.string(), ""), ""),
-		researchLineId: v.optional(v.fallback(v.string(), ""), ""),
-		journalKind: v.optional(v.fallback(v.string(), ""), ""),
-	})
-
-	const filtersParams = useSearchParams(filtersParamsSchema, {
+	const filtersParams = useSearchParams(academicFiltersParamsDTOSchema, {
 		debounce: 300,
 		pushHistory: false,
 	})
@@ -66,6 +61,13 @@
 
 	const tabParams = useSearchParams(tabParamsSchema, { pushHistory: true })
 	const activeTab = $derived(tabParams.tab)
+
+	const tabs = [
+		{ key: "academic-info", label: "Información Académica", hover: "hover:text-ink" },
+		{ key: "publications", label: "Publicaciones", hover: "hover:text-ink" },
+		{ key: "stats", label: "Estadísticas", hover: "hover:text-ink" },
+		{ key: "collaborations", label: "Colaboraciones", hover: "hover:text-corp-ink" },
+	] as const
 
 	const academicQuery = useQuery(() => ({
 		queryKey: ["academic", id],
@@ -107,27 +109,6 @@
 
 		return slots
 	})
-
-	const degreeKindMeta: Record<
-		string,
-		{ label: string; badge: "base" | "advanced" | "doctor"; dot: string }
-	> = {
-		professional: {
-			label: DegreeKindValue.LABELS.professional,
-			badge: "base",
-			dot: "bg-corp-blue",
-		},
-		magister: {
-			label: DegreeKindValue.LABELS.magister,
-			badge: "advanced",
-			dot: "bg-corp-yellow",
-		},
-		doctor: {
-			label: DegreeKindValue.LABELS.doctor,
-			badge: "doctor",
-			dot: "bg-corp-gold",
-		},
-	}
 
 	const takenSuperiorKind = $derived.by<(typeof DegreeKindValue.KINDS)[number] | null>(() => {
 		const current = editingDegree
@@ -218,46 +199,18 @@
 
 				<div class="flex h-[calc(100dvh-10rem)] flex-col">
 					<div class="mb-4 flex shrink-0 rounded-lg bg-corp-gray/10 p-1">
-						<button
-							type="button"
-							class="flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors {activeTab ===
-							'academic-info'
-								? 'bg-white text-corp-blue shadow-sm'
-								: 'text-corp-gray hover:text-ink'}"
-							onclick={() => (tabParams.tab = "academic-info")}
-						>
-							Información Académica
-						</button>
-						<button
-							type="button"
-							class="flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors {activeTab ===
-							'publications'
-								? 'bg-white text-corp-blue shadow-sm'
-								: 'text-corp-gray hover:text-ink'}"
-							onclick={() => (tabParams.tab = "publications")}
-						>
-							Publicaciones
-						</button>
-						<button
-							type="button"
-							class="flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors {activeTab ===
-							'stats'
-								? 'bg-white text-corp-blue shadow-sm'
-								: 'text-corp-gray hover:text-ink'}"
-							onclick={() => (tabParams.tab = "stats")}
-						>
-							Estadísticas
-						</button>
-						<button
-							type="button"
-							class="flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors {activeTab ===
-							'collaborations'
-								? 'bg-white text-corp-blue shadow-sm'
-								: 'text-corp-gray hover:text-corp-ink'}"
-							onclick={() => (tabParams.tab = "collaborations")}
-						>
-							Colaboraciones
-						</button>
+						{#each tabs as tab (tab.key)}
+							<button
+								type="button"
+								class="flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors {activeTab ===
+								tab.key
+									? 'bg-white text-corp-blue shadow-sm'
+									: `text-corp-gray ${tab.hover}`}"
+								onclick={() => (tabParams.tab = tab.key)}
+							>
+								{tab.label}
+							</button>
+						{/each}
 					</div>
 					<div class="min-h-0 flex-1 space-y-6 overflow-y-auto">
 						{#if activeTab === "academic-info"}

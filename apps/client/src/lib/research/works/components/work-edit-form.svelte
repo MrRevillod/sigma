@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { Plus, X } from "@lucide/svelte"
 	import { createForm, Field, Form, handleSubmit, reset } from "@formisch/svelte"
-	import type { FieldElementProps } from "@formisch/svelte"
 	import { onMount } from "svelte"
 	import * as v from "valibot"
 
 	import type { WorkDetail } from "$works/entity"
+	import type { AuthorDraft, AutoGrowField } from "$works/types"
 
 	import { academicService } from "$academics/service"
 	import Select from "$shared/components/ui/select.svelte"
@@ -48,20 +48,6 @@
 	function parseJournalKind(value: string | null | undefined): "wos" | "scopus" | null {
 		if (value === "wos" || value === "scopus") return value
 		return null
-	}
-
-	interface AuthorDraft {
-		orcid: string
-		name: string
-		isExternal: boolean
-		affiliations: string[]
-		draftAffiliation: string
-	}
-
-	interface AutoGrowField {
-		props: FieldElementProps
-		input: string | null | undefined
-		errors: [string, ...string[]] | null
 	}
 
 	interface Props {

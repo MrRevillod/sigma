@@ -1,12 +1,7 @@
 <script lang="ts">
 	import { ArrowRight } from "@lucide/svelte"
 
-	interface BarsItem {
-		id: string | null
-		name: string
-		total: number
-		color?: string
-	}
+	import type { BarsItem } from "../chart-types"
 
 	interface Props {
 		data: BarsItem[]

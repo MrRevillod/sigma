@@ -8,54 +8,12 @@
 	import RadarChart from "./radar-chart.svelte"
 	import StatsSection from "./stats-section.svelte"
 	import TrendLine from "./trend-line.svelte"
-
-	const ACRONYMS: Record<string, string> = {
-		"Materiales Avanzados y Bioproductos": "MAB",
-		"Ciencias de la Tierra": "CT",
-		"Sostenibilidad": "SO",
-		"IA, Sistemas Complejos y Modelamiento Matemático": "IA",
-		"Educación en Ingeniería": "EI",
-	}
-
-	const STOPWORDS = new Set([
-		"de",
-		"del",
-		"la",
-		"las",
-		"los",
-		"el",
-		"en",
-		"y",
-		"e",
-		"a",
-		"para",
-		"por",
-		"su",
-		"un",
-		"una",
-	])
-
-	function acronymOf(name: string): string {
-		if (ACRONYMS[name]) return ACRONYMS[name]
-
-		const words = name
-			.replace(/[^\p{L}\s]/gu, " ")
-			.split(/\s+/)
-			.filter((w) => w.length > 0 && !STOPWORDS.has(w.toLowerCase()))
-
-		if (words.length === 0) return name.slice(0, 2).toUpperCase()
-		if (words.length === 1) return words[0].slice(0, 2).toUpperCase()
-		return words
-			.slice(0, 3)
-			.map((w) => w[0].toUpperCase())
-			.join("")
-	}
+	import { acronymOf } from "../utils"
+	import type { AcademicStatsSection } from "../chart-types"
 
 	interface Props {
 		academicId: string
 	}
-
-	type Section = "lines" | "trend" | "impact"
 
 	let { academicId }: Props = $props()
 
@@ -64,9 +22,9 @@
 	let yearFrom = $state(String(currentYear - 5))
 	let yearTo = $state(String(currentYear))
 
-	let openSection = $state<Section>("lines")
+	let openSection = $state<AcademicStatsSection>("lines")
 
-	function toggleSection(section: Section) {
+	function toggleSection(section: AcademicStatsSection) {
 		openSection = section
 	}
 
@@ -81,6 +39,7 @@
 	const lines = $derived(query.data?.byResearchLine ?? [])
 	const total = $derived(lines.reduce((a, l) => a + l.count, 0))
 	const maxCount = $derived(Math.max(0, ...lines.map((l) => l.count)))
+
 	const radarItems = $derived(
 		lines.map((l) => ({
 			name: l.name,

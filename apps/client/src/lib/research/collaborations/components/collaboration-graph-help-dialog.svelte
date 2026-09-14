@@ -17,7 +17,6 @@
 	description="Significado de los conceptos y filtros del grafo."
 	class="max-w-3xl"
 >
-	<!-- Tabs -->
 	<div class="mb-4 flex gap-1 border-b border-corp-gray/10">
 		<button
 			type="button"
@@ -39,10 +38,8 @@
 		</button>
 	</div>
 
-	<!-- Tab Content -->
 	<div class="space-y-5">
 		{#if activeTab === "concepts"}
-			<!-- Conceptos Tab -->
 			<section>
 				<h3 class="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A]">
 					<CircleDot class="size-4 text-corp-blue/60" />
@@ -146,7 +143,6 @@
 				</p>
 			</div>
 		{:else}
-			<!-- Filtros Tab -->
 			<section>
 				<h3 class="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A]">
 					<Layers class="size-4 text-corp-blue/60" />

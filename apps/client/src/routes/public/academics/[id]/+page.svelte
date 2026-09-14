@@ -8,6 +8,7 @@
 	import { useQuery, useMutation } from "$shared/http/tanstack"
 	import { useSearchParams } from "runed/kit"
 	import { academicService } from "$academics/service"
+	import { academicFiltersParamsDTOSchema } from "$academics/dtos"
 	import { Loader, CircleAlert, CircleCheck, Network, Info, Send } from "@lucide/svelte"
 
 	import Dialog from "$shared/components/ui/dialog.svelte"
@@ -21,16 +22,7 @@
 
 	const id = $derived(page.params.id ?? "")
 
-	const yearFromDefault = String(new Date().getFullYear() - 5)
-
-	const filtersParamsSchema = v.object({
-		yearFrom: v.optional(v.fallback(v.string(), yearFromDefault), yearFromDefault),
-		yearTo: v.optional(v.fallback(v.string(), ""), ""),
-		researchLineId: v.optional(v.fallback(v.string(), ""), ""),
-		journalKind: v.optional(v.fallback(v.string(), ""), ""),
-	})
-
-	const filtersParams = useSearchParams(filtersParamsSchema, {
+	const filtersParams = useSearchParams(academicFiltersParamsDTOSchema, {
 		debounce: 300,
 		pushHistory: false,
 	})
@@ -44,6 +36,12 @@
 
 	const tabParams = useSearchParams(tabParamsSchema, { pushHistory: true })
 	const activeTab = $derived(tabParams.tab)
+
+	const tabs = [
+		{ key: "publications", label: "Publicaciones" },
+		{ key: "stats", label: "Estadísticas" },
+		{ key: "collaborations", label: "Colaboraciones" },
+	] as const
 
 	const academicQuery = useQuery(() => ({
 		queryKey: ["public-academic", id],
@@ -105,36 +103,18 @@
 				/>
 				<div class="flex h-[calc(100dvh-10rem)] flex-col">
 					<div class="mb-4 flex shrink-0 rounded-lg bg-corp-gray/10 p-1">
-						<button
-							type="button"
-							class="flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors {activeTab ===
-							'publications'
-								? 'bg-white text-corp-blue shadow-sm'
-								: 'text-corp-gray hover:text-corp-ink'}"
-							onclick={() => (tabParams.tab = "publications")}
-						>
-							Publicaciones
-						</button>
-						<button
-							type="button"
-							class="flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors {activeTab ===
-							'stats'
-								? 'bg-white text-corp-blue shadow-sm'
-								: 'text-corp-gray hover:text-corp-ink'}"
-							onclick={() => (tabParams.tab = "stats")}
-						>
-							Estadísticas
-						</button>
-						<button
-							type="button"
-							class="flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors {activeTab ===
-							'collaborations'
-								? 'bg-white text-corp-blue shadow-sm'
-								: 'text-corp-gray hover:text-corp-ink'}"
-							onclick={() => (tabParams.tab = "collaborations")}
-						>
-							Colaboraciones
-						</button>
+						{#each tabs as tab (tab.key)}
+							<button
+								type="button"
+								class="flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors {activeTab ===
+								tab.key
+									? 'bg-white text-corp-blue shadow-sm'
+									: 'text-corp-gray hover:text-corp-ink'}"
+								onclick={() => (tabParams.tab = tab.key)}
+							>
+								{tab.label}
+							</button>
+						{/each}
 					</div>
 					<div class="min-h-0 flex-1 space-y-6 overflow-y-auto">
 						{#if activeTab === "collaborations"}
