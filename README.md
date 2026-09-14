@@ -1,4 +1,4 @@
-# Plataforma de Visualización y Gestión de Investigación
+# Sigma · Sistema de Gestión y Métricas Académicas (Σ)
 
 Plataforma web para importar, clasificar y analizar la producción científica de la Facultad de Ingeniería de la UCT, reemplazando la gestión tradicional en planillas de cálculo. Permite la integración con ORCID y OpenAlex, así como la indexación de revistas WoS y Scopus.
 

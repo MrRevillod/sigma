@@ -98,10 +98,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/${{ steps.owner.outputs.value }}/academic-mgr-server
+          images: ghcr.io/${{ steps.owner.outputs.value }}/sigma
           tags: |
-            type=sha,prefix=sha-
-            type=raw,value=latest
+            type=sha,prefix=server-sha-
+            type=raw,value=server-latest
 
       - name: Build and push
         uses: docker/build-push-action@v7
@@ -148,10 +148,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/${{ steps.owner.outputs.value }}/academic-mgr-client
+          images: ghcr.io/${{ steps.owner.outputs.value }}/sigma
           tags: |
-            type=sha,prefix=sha-
-            type=raw,value=latest
+            type=sha,prefix=client-sha-
+            type=raw,value=client-latest
 
       - name: Build and push
         uses: docker/build-push-action@v7
