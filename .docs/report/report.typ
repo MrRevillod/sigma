@@ -1,4 +1,4 @@
-#set document(title: "Plataforma de Visualización y Gestión de Investigación")
+#set document(title: "Sistema de Gestión y Métricas Académicas")
 #set page(paper: "a4", margin: (x: 2.5cm, y: 2.2cm), numbering: "1")
 #set text(font: "P052", size: 10.5pt, lang: "es")
 #set par(justify: true, leading: 0.72em)
@@ -41,7 +41,7 @@
 }
 
 #report-head(
-  "Plataforma de Visualización y Gestión de Investigación",
+  "Sistema de Gestión y Métricas Académicas",
   "Reporte de Proyecto y Proyección futura",
   show-line: true,
 )
@@ -173,34 +173,32 @@ El académico puede corregir información de las publicaciones en las que partic
 
 = Proyección a futuro
 
-Como parte de la continuidad del proyecto, se identificaron distintas funcionalidades que podrían incorporarse en futuras etapas de desarrollo. Estas permitirían ampliar el alcance actual de la plataforma y abordar nuevas necesidades relacionadas con la gestión y análisis de la investigación de la facultad.
+Como parte de la continuidad del proyecto, se identificaron diversas funcionalidades que podrían incorporarse en futuras etapas de desarrollo. Estas permitirían ampliar el alcance actual de la plataforma y responder a nuevas necesidades relacionadas con la gestión, visualización y análisis de la investigación desarrollada en la facultad.
 
-== Internacionalización
+== Incorporación de colaboradores externos e internacionalización
 
-Los coautores externos que participan en las publicaciones de los académicos de la facultad se identifican actualmente. Sin embargo, no se registran como académicos dentro del sistema. Sus datos quedan asociados a las publicaciones y se muestran como parte del detalle de cada colaboración. Por lo tanto, la información disponible sobre ellos no permite realizar el mismo tipo de análisis que se realiza para los académicos de la facultad.
+Una futura ampliación consistiría en incorporar al sistema a coautores pertenecientes a otras facultades, universidades e instituciones extranjeras. Para cada colaborador externo, se podría almacenar información obtenida desde las fuentes utilizadas durante la sincronización, como su país de origen y su institución de afiliación.
 
-Incorporar a los colaboradores externos extranjeros en la red de colaboración sería una ampliación de esta funcionalidad. Para cada uno se podría almacenar información obtenida desde las fuentes utilizadas en la sincronización, como su país e institución de afiliación.
+La incorporación de estos investigadores permitiría extender la red de colaboración actualmente disponible. Asimismo, las recomendaciones de posibles colaboradores podrían considerar tanto a investigadores internos como externos, de acuerdo con su afinidad temática. Para ello, se podrían utilizar las métricas ya implementadas en el sistema, basadas en la coincidencia de tópicos, palabras clave y líneas de investigación.
 
-Las recomendaciones de colaboración podrían incluir a estos investigadores. Cuando el sistema sugiera un posible colaborador, la recomendación podría incluir investigadores internos y externos según su afinidad temática. Para esto se podrían mantener las métricas con las cuales ya cuenta el sistema, basadas en la coincidencia de tópicos, palabras clave y líneas de investigación.
+Esta información permitiría identificar las instituciones extranjeras con las que existen vínculos de colaboración y reconocer investigadores cuyas áreas de trabajo sean afines a las de la facultad. Estos antecedentes podrían servir de apoyo para evaluar posibles convenios, pasantías y nuevas colaboraciones académicas internacionales.
 
-Con esta información se podría conocer con qué instituciones extranjeras existen colaboraciones y qué investigadores tienen relación con las áreas de trabajo de la facultad. Estos datos servirían como antecedente para analizar posibles convenios, pasantías o nuevas colaboraciones académicas.
+== Catálogo de revistas y análisis de costos de publicación
 
-== Catálogo de revistas y análisis de APC
+Otra funcionalidad futura consiste en integrar un catálogo de revistas a partir de las publicaciones existentes en la plataforma. Este catálogo podría incorporar información relevante de cada revista, como el costo asociado al *Article Processing Charge* (APC).
 
-Las revistas ya forman parte de los datos obtenidos para las publicaciones, pero actualmente esa información solo se utiliza para determinar la indexación y generar estadísticas. La plataforma no cuenta con un catálogo que permita revisar de forma conjunta las revistas utilizadas por los académicos y sus costos de publicación.
+La disponibilidad de estos datos permitiría estimar presupuestos de publicación y analizar alternativas de revistas dentro de una misma línea de investigación o nivel de indexación. Por ejemplo, sería posible comparar los costos estimados de publicación entre distintas revistas y apoyar la toma de decisiones de los investigadores.
 
-Se podría generar este catálogo en base a las revistas presentes en las publicaciones sincronizadas. Cada registro podría incluir filtros por cuartil, indexación WoS o Scopus, línea de investigación, departamento y rango de años. Sería posible consultar qué revistas han sido utilizadas por los académicos y en qué áreas se concentran.
+Para incorporar información sobre cuartiles e indexación, sería necesaria una coordinación con la Biblioteca de la universidad, debido a que estos datos se encuentran disponibles mediante la base de datos Web of Science de Clarivate, cuya suscripción es institucional.
 
-A esta información se podría agregar el Article Processing Charge (APC) correspondiente a cada revista, junto con indicadores como el Impact Factor y el cuartil. Con estos datos sería posible comparar revistas de acuerdo a su costo y sus indicadores bibliométricos.
+== Incorporación de proyectos de investigación
 
-El catálogo también podría utilizarse para estimar presupuestos de publicación. Por ejemplo, permitiría revisar cuánto podría costar publicar en determinadas revistas y analizar alternativas dentro de una misma línea de investigación o nivel de indexación.
+Se propone incorporar un módulo de proyectos de investigación, comenzando por aquellos adjudicados a través de ANID. Esta implementación requeriría coordinación con la Vicerrectoría de Investigación, unidad que administra información sobre proyectos adjudicados y en ejecución.
 
-== Proyectos adjudicados y en curso
+Actualmente, el análisis de la producción científica se basa principalmente en las publicaciones y los académicos que participan en ellas. Sin embargo, los proyectos de investigación relacionados con dichas publicaciones no forman parte del modelo actual, por lo que no es posible establecer una relación directa entre una publicación y el proyecto que financió su desarrollo.
 
-El análisis de la producción científica parte de las publicaciones y los académicos que participan en ellas. Los proyectos de investigación relacionados con estas publicaciones no forman parte del modelo actual, por lo que no es posible relacionar directamente una publicación con el proyecto que la financió.
+La incorporación de esta información permitiría incluir tanto proyectos financiados por ANID como proyectos en curso financiados por otras fuentes o sin financiamiento ANID. De este modo, la plataforma podría ofrecer una visión más completa de la actividad investigativa de la facultad.
 
-Incorporar un módulo de proyectos de investigación podría ser una siguiente etapa, comenzando con aquellos adjudicados a través de ANID. Cada proyecto podría contener información sobre la fuente de financiamiento, su periodo de ejecución, estado e investigadores participantes. Entre estos se incluiría al investigador responsable y a los coinvestigadores.
+== Incorporación de profesores part-time y postdoctorandos
 
-Las publicaciones podrían vincularse con los proyectos correspondientes. Esto permitiría consultar la producción asociada a un proyecto y conocer los investigadores que participan en él. Se podrían analizar los proyectos en los que participa cada académico y su distribución entre las distintas líneas de investigación de la facultad.
-
-La información de proyectos complementaría los datos de publicaciones que ya maneja la plataforma y representaría una parte más amplia de la actividad investigativa de la facultad.
+Finalmente, se propone incorporar al sistema a profesores part-time y postdoctorandos vinculados a la facultad. Esto permitiría representar de manera más completa a los investigadores que participan en la producción científica y en las redes de colaboración, aun cuando no cuenten con una vinculación académica de jornada completa.
