@@ -1,9 +1,9 @@
-use std::{str::FromStr, time::Duration};
-
 use crate::{
 	research::{AuthorshipPosition, Source, SourceId, Work, WorkType, WorksError},
 	shared::AppResult,
 };
+
+use std::{str::FromStr, time::Duration};
 
 use chrono::NaiveDate;
 use html_escape::decode_html_entities;
@@ -111,6 +111,7 @@ pub trait OpenAlexWorkExt {
 	fn authorships(&self) -> Vec<OaAuthorshipData>;
 	fn topic_refs(&self) -> Vec<OaTopicRef>;
 	fn keyword_refs(&self) -> Vec<OaKeywordRef>;
+	fn is_indexable_ty(&self) -> bool;
 }
 
 impl OpenAlexWorkExt for OaWork {
@@ -306,5 +307,9 @@ impl OpenAlexWorkExt for OaWork {
 					.collect()
 			})
 			.unwrap_or_default()
+	}
+
+	fn is_indexable_ty(&self) -> bool {
+		matches!(self.ty(), WorkType::Article | WorkType::ConferencePaper)
 	}
 }

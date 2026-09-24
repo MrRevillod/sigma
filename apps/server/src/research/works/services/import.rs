@@ -69,7 +69,7 @@ impl WorksImportService {
 				}
 			}
 
-			if oa_work.ty() != WorkType::Article {
+			if !oa_work.is_indexable_ty() {
 				continue;
 			}
 
